@@ -3,7 +3,9 @@ const { execSync } = require("node:child_process");
 const branch = process.env.VERCEL_GIT_COMMIT_REF || "";
 
 if (branch.startsWith("dependabot/")) {
-  console.log(`Skipping build for Dependabot branch "${branch}" — its lockfile isn't updated, so this would fail pnpm install anyway. Review/merge the PR (updating the lockfile) to get a real build.`);
+  console.log(
+    `Skipping build for Dependabot branch "${branch}" — its lockfile isn't updated, so this would fail pnpm install anyway. Review/merge the PR (updating the lockfile) to get a real build.`
+  );
   process.exit(0); // this causes Vercel to skip the build
 }
 
