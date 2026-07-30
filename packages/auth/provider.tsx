@@ -1,0 +1,50 @@
+"use client";
+
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import type { Theme } from "@clerk/types";
+import { useTheme } from "next-themes";
+import type { ComponentProps } from "react";
+
+type AuthProviderProperties = ComponentProps<typeof ClerkProvider> & {
+  privacyUrl?: string;
+  termsUrl?: string;
+  helpUrl?: string;
+};
+
+export const AuthProvider = ({
+  privacyUrl,
+  termsUrl,
+  helpUrl,
+  ...properties
+}: AuthProviderProperties) => {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  const baseTheme = isDark ? dark : undefined;
+
+  const variables: Theme["variables"] = {
+    fontFamily: "var(--font-sans)",
+    fontFamilyButtons: "var(--font-sans)",
+    fontWeight: {
+      bold: "var(--font-weight-bold)",
+      normal: "var(--font-weight-normal)",
+      medium: "var(--font-weight-medium)",
+    },
+  };
+
+  const elements: Theme["elements"] = {
+    dividerLine: "bg-border",
+    socialButtonsIconButton: "bg-card",
+    navbarButton: "text-foreground",
+  };
+
+  // @clerk/types' `Appearance<Theme>` generic has drifted out of sync with
+  // what @clerk/nextjs's ClerkProvider actually accepts at this version pin;
+  // baseTheme/elements/variables are stable, documented Clerk appearance
+  // options at runtime regardless.
+  const appearance = { baseTheme, elements, variables } as ComponentProps<
+    typeof ClerkProvider
+  >["appearance"];
+
+  return <ClerkProvider {...properties} appearance={appearance} />;
+};

@@ -1,0 +1,615 @@
+// Esteric Kitchens & Interior Designs — CRM + marketing site data model
+// learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Identity, roles & auditing
+// ─────────────────────────────────────────────────────────────────────────
+
+// Internal staff/admin accounts. Auth/session/2FA is handled by Clerk;
+// this row is created via the Clerk `user.created` webhook and mirrors
+// the subset of identity data the app needs to join against.
+model User {
+  id            String     @id @default(cuid())
+  clerkId       String     @unique
+  email         String     @unique
+  firstName     String
+  lastName      String
+  avatarUrl     String?
+  phone         String?
+  jobTitle      String?
+  status        UserStatus @default(ACTIVE)
+  roleId        String
+  role          Role       @relation(fields: [roleId], references: [id])
+  lastLoginAt   DateTime?
+  lastSessionId String? // used to dedupe login activity-log entries per Clerk session
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  assignedLeads       Lead[]               @relation("LeadAssignee")
+  createdLeadNotes    LeadNote[]
+  assignedQuotations  Quotation[]          @relation("QuotationAssignee")
+  createdQuotations   Quotation[]          @relation("QuotationCreator")
+  projectAssignments  ProjectAssignment[]
+  createdProjectNotes ProjectNote[]
+  projectUpdates      ProjectUpdate[]
+  customerNotes       CustomerNote[]
+  communications      Communication[]
+  followUps           FollowUp[]           @relation("FollowUpAssignee")
+  createdFollowUps    FollowUp[]           @relation("FollowUpCreator")
+  blogPosts           BlogPost[]
+  activityLogs        ActivityLog[]
+  uploadedDocuments   Document[]
+  bookingsHandled     AppointmentBooking[] @relation("BookingAssignee")
+
+  @@index([roleId])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// Data-driven roles (rather than a hardcoded enum) so admins can create
+// new roles as the team grows without a code deploy. `permissions` holds
+// permission keys, e.g. "leads:write", "quotations:approve".
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  permissions String[]
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users User[]
+}
+
+// Append-only audit trail for every consequential action in the CRM.
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String // e.g. "lead.status_changed", "quotation.approved"
+  entityType  String // e.g. "Lead", "Quotation", "Project"
+  entityId    String?
+  description String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Leads
+// ─────────────────────────────────────────────────────────────────────────
+
+model Lead {
+  id                  String           @id @default(cuid())
+  name                String
+  email               String
+  phone               String?
+  source              LeadSource       @default(WEBSITE)
+  status              LeadStatus       @default(NEW)
+  priority            Priority         @default(MEDIUM)
+  serviceCategory     ServiceCategory?
+  budgetRange         String?
+  message             String?
+  assignedToId        String?
+  assignedTo          User?            @relation("LeadAssignee", fields: [assignedToId], references: [id])
+  convertedCustomerId String?          @unique
+  convertedCustomer   Customer?        @relation(fields: [convertedCustomerId], references: [id])
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  notes          LeadNote[]
+  followUps      FollowUp[]
+  communications Communication[]
+  quotations     Quotation[]
+  bookings       AppointmentBooking[]
+
+  @@index([status])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+enum LeadSource {
+  WEBSITE
+  QUOTE_FORM
+  CONTACT_FORM
+  APPOINTMENT_FORM
+  PHONE
+  REFERRAL
+  WALK_IN
+  SOCIAL_MEDIA
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  QUOTE_SENT
+  WON
+  LOST
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ServiceCategory {
+  KITCHEN
+  INTERIOR
+  LANDSCAPING
+  WARDROBES_CABINETS
+  OTHER
+}
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
+
+// Shared follow-up/reminder queue for both leads and customers.
+model FollowUp {
+  id           String    @id @default(cuid())
+  leadId       String?
+  lead         Lead?     @relation(fields: [leadId], references: [id])
+  customerId   String?
+  customer     Customer? @relation(fields: [customerId], references: [id])
+  dueAt        DateTime
+  note         String
+  completedAt  DateTime?
+  assignedToId String
+  assignedTo   User      @relation("FollowUpAssignee", fields: [assignedToId], references: [id])
+  createdById  String
+  createdBy    User      @relation("FollowUpCreator", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+
+  @@index([assignedToId])
+  @@index([dueAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Customers
+// ─────────────────────────────────────────────────────────────────────────
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  company      String?
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  region       String?
+  postalCode   String?
+  country      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fromLead       Lead?
+  notes          CustomerNote[]
+  communications Communication[]
+  quotations     Quotation[]
+  projects       Project[]
+  followUps      FollowUp[]
+
+  @@index([email])
+}
+
+model CustomerNote {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+}
+
+model Communication {
+  id         String                 @id @default(cuid())
+  customerId String?
+  customer   Customer?              @relation(fields: [customerId], references: [id])
+  leadId     String?
+  lead       Lead?                  @relation(fields: [leadId], references: [id])
+  staffId    String
+  staff      User                   @relation(fields: [staffId], references: [id])
+  channel    CommunicationChannel
+  direction  CommunicationDirection
+  subject    String?
+  body       String?
+  occurredAt DateTime               @default(now())
+  createdAt  DateTime               @default(now())
+
+  @@index([customerId])
+  @@index([leadId])
+}
+
+enum CommunicationChannel {
+  EMAIL
+  PHONE
+  WHATSAPP
+  SMS
+  MEETING
+  OTHER
+}
+
+enum CommunicationDirection {
+  INBOUND
+  OUTBOUND
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Quotations
+// ─────────────────────────────────────────────────────────────────────────
+
+model Quotation {
+  id                 String          @id @default(cuid())
+  quoteNumber        String          @unique
+  customerId         String
+  customer           Customer        @relation(fields: [customerId], references: [id])
+  leadId             String?
+  lead               Lead?           @relation(fields: [leadId], references: [id])
+  title              String
+  status             QuotationStatus @default(DRAFT)
+  subtotal           Decimal         @default(0) @db.Decimal(12, 2)
+  taxRate            Decimal         @default(0) @db.Decimal(5, 2)
+  taxAmount          Decimal         @default(0) @db.Decimal(12, 2)
+  discountAmount     Decimal         @default(0) @db.Decimal(12, 2)
+  total              Decimal         @default(0) @db.Decimal(12, 2)
+  currency           String          @default("KES")
+  validUntil         DateTime?
+  termsAndConditions String?
+  pdfUrl             String?
+  version            Int             @default(1)
+  parentQuotationId  String?
+  parentQuotation    Quotation?      @relation("QuotationRevisions", fields: [parentQuotationId], references: [id])
+  revisions          Quotation[]     @relation("QuotationRevisions")
+  sentAt             DateTime?
+  viewedAt           DateTime?
+  respondedAt        DateTime?
+  rejectionReason    String?
+  createdById        String
+  createdBy          User            @relation("QuotationCreator", fields: [createdById], references: [id])
+  assignedToId       String?
+  assignedTo         User?           @relation("QuotationAssignee", fields: [assignedToId], references: [id])
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  items   QuotationItem[]
+  project Project?
+
+  @@index([customerId])
+  @@index([status])
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  VIEWED
+  APPROVED
+  REJECTED
+  EXPIRED
+  REVISED
+}
+
+model QuotationItem {
+  id          String    @id @default(cuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id])
+  description String
+  quantity    Decimal   @default(1) @db.Decimal(10, 2)
+  unitPrice   Decimal   @db.Decimal(12, 2)
+  total       Decimal   @db.Decimal(12, 2)
+  sortOrder   Int       @default(0)
+
+  @@index([quotationId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Projects
+// ─────────────────────────────────────────────────────────────────────────
+
+model Project {
+  id                   String          @id @default(cuid())
+  projectNumber        String          @unique
+  customerId           String
+  customer             Customer        @relation(fields: [customerId], references: [id])
+  quotationId          String?         @unique
+  quotation            Quotation?      @relation(fields: [quotationId], references: [id])
+  title                String
+  category             ServiceCategory
+  status               ProjectStatus   @default(PLANNING)
+  budget               Decimal?        @db.Decimal(12, 2)
+  startDate            DateTime?
+  deadline             DateTime?
+  completedAt          DateTime?
+  completionPercentage Int             @default(0)
+  location             String?
+  description          String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  assignments      ProjectAssignment[]
+  notes            ProjectNote[]
+  updates          ProjectUpdate[]
+  milestones       ProjectMilestone[]
+  documents        Document[]
+  portfolioProject PortfolioProject?
+
+  @@index([status])
+  @@index([customerId])
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+model ProjectAssignment {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  roleOnProject String
+  assignedAt    DateTime @default(now())
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model ProjectNote {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model ProjectUpdate {
+  id                   String   @id @default(cuid())
+  projectId            String
+  project              Project  @relation(fields: [projectId], references: [id])
+  authorId             String
+  author               User     @relation(fields: [authorId], references: [id])
+  note                 String
+  completionPercentage Int?
+  imageUrls            String[]
+  createdAt            DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model ProjectMilestone {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id])
+  name        String
+  dueDate     DateTime?
+  completedAt DateTime?
+  sortOrder   Int       @default(0)
+
+  @@index([projectId])
+}
+
+// Project documents: contracts, floor plans, permits, invoices.
+model Document {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id])
+  name         String
+  url          String
+  mimeType     String
+  sizeBytes    Int
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([projectId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Public portfolio & gallery (managed in the CRM, rendered on the website)
+// ─────────────────────────────────────────────────────────────────────────
+
+model PortfolioProject {
+  id             String          @id @default(cuid())
+  title          String
+  slug           String          @unique
+  category       ServiceCategory
+  description    String?
+  location       String?
+  completionDate DateTime?
+  isFeatured     Boolean         @default(false)
+  status         ContentStatus   @default(DRAFT)
+  projectId      String?         @unique
+  project        Project?        @relation(fields: [projectId], references: [id])
+  seoTitle       String?
+  seoDescription String?
+  publishedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  images       PortfolioImage[]
+  testimonials Testimonial[]
+
+  @@index([category])
+  @@index([status])
+}
+
+model PortfolioImage {
+  id                 String             @id @default(cuid())
+  portfolioProjectId String
+  portfolioProject   PortfolioProject   @relation(fields: [portfolioProjectId], references: [id])
+  url                String
+  type               PortfolioImageType
+  caption            String?
+  altText            String?
+  sortOrder          Int                @default(0)
+
+  @@index([portfolioProjectId])
+}
+
+enum PortfolioImageType {
+  COVER
+  BEFORE
+  AFTER
+  PROGRESS
+  GALLERY
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Testimonial {
+  id                 String            @id @default(cuid())
+  customerName       String
+  quote              String
+  rating             Int               @default(5)
+  photoUrl           String?
+  portfolioProjectId String?
+  portfolioProject   PortfolioProject? @relation(fields: [portfolioProjectId], references: [id])
+  isFeatured         Boolean           @default(false)
+  isPublished        Boolean           @default(true)
+  sortOrder          Int               @default(0)
+  createdAt          DateTime          @default(now())
+}
+
+model CertificationAward {
+  id          String                 @id @default(cuid())
+  title       String
+  issuer      String?
+  type        CertificationAwardType
+  dateAwarded DateTime?
+  imageUrl    String?
+  description String?
+  isPublished Boolean                @default(true)
+  sortOrder   Int                    @default(0)
+  createdAt   DateTime               @default(now())
+}
+
+enum CertificationAwardType {
+  CERTIFICATION
+  AWARD
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Content: blog, FAQs, newsletter
+// ─────────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  excerpt        String?
+  content        String
+  coverImageUrl  String?
+  category       String?
+  tags           String[]
+  status         ContentStatus @default(DRAFT)
+  authorId       String
+  author         User          @relation(fields: [authorId], references: [id])
+  seoTitle       String?
+  seoDescription String?
+  publishedAt    DateTime?
+  viewCount      Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String
+  category    String?
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String?
+  status         SubscriberStatus @default(SUBSCRIBED)
+  source         String?
+  subscribedAt   DateTime         @default(now())
+  unsubscribedAt DateTime?
+}
+
+enum SubscriberStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Appointment booking
+// ─────────────────────────────────────────────────────────────────────────
+
+model AppointmentBooking {
+  id              String           @id @default(cuid())
+  name            String
+  email           String
+  phone           String?
+  serviceCategory ServiceCategory?
+  requestedDate   DateTime
+  requestedSlot   String?
+  status          BookingStatus    @default(PENDING)
+  notes           String?
+  leadId          String?
+  lead            Lead?            @relation(fields: [leadId], references: [id])
+  assignedToId    String?
+  assignedTo      User?            @relation("BookingAssignee", fields: [assignedToId], references: [id])
+  confirmedAt     DateTime?
+  createdAt       DateTime         @default(now())
+
+  @@index([status])
+  @@index([requestedDate])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULED
+  CANCELLED
+  COMPLETED
+}

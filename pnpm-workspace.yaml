@@ -1,0 +1,16 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+onlyBuiltDependencies:
+  - "@clerk/shared"
+  - "@prisma/engines"
+  - "@prisma/client"
+  - "@sentry/cli"
+  - "@tailwindcss/oxide"
+  - "bufferutil"
+  - "core-js"
+  - "esbuild"
+  - "prisma"
+  - "sharp"
+  - "unrs-resolver"
