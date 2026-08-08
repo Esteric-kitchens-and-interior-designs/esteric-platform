@@ -4,21 +4,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@repo/design-system/components/ui/accordion";
-import { createMetadata } from "@repo/seo/metadata";
-import type { Metadata } from "next";
-import { getAllFaqs } from "@/lib/queries";
+import Link from "next/link";
+import type { getAllFaqs } from "@/lib/queries";
 
-export const generateMetadata = (): Metadata =>
-  createMetadata({
-    title: "FAQs",
-    description:
-      "Frequently asked questions about working with Esteric Kitchens & Interior Designs.",
-  });
+interface FaqsProps {
+  readonly faqs: Awaited<ReturnType<typeof getAllFaqs>>;
+}
 
 const UNCATEGORIZED = "General";
 
-const FaqsPage = async () => {
-  const faqs = await getAllFaqs();
+export const Faqs = ({ faqs }: FaqsProps) => {
+  if (faqs.length === 0) {
+    return null;
+  }
+
   const grouped = faqs.reduce<Record<string, typeof faqs>>((acc, faq) => {
     const category = faq.category ?? UNCATEGORIZED;
     acc[category] = [...(acc[category] ?? []), faq];
@@ -27,30 +26,29 @@ const FaqsPage = async () => {
   const categories = Object.keys(grouped);
 
   return (
-    <div className="w-full py-16 lg:py-24">
-      <div className="container mx-auto flex flex-col gap-14">
+    <div className="w-full scroll-mt-20 bg-muted/40 py-16 lg:py-24" id="faqs">
+      <div className="container mx-auto flex flex-col gap-10">
         <div className="flex flex-col gap-2">
-          <h1 className="max-w-xl font-display font-regular text-4xl tracking-tighter md:text-5xl">
-            Frequently Asked Questions
-          </h1>
-          <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
+          <h2 className="max-w-xl text-left font-display font-regular text-3xl tracking-tighter md:text-5xl">
+            Frequently asked questions
+          </h2>
+          <p className="max-w-xl text-left text-lg text-muted-foreground leading-relaxed tracking-tight">
             Answers to what clients ask us most. Can't find what you need?{" "}
-            <a
+            <Link
               className="text-primary underline-offset-4 hover:underline"
               href="/contact"
             >
               Get in touch
-            </a>
+            </Link>
             .
           </p>
         </div>
-
-        {categories.length > 0 ? (
-          categories.map((category) => (
+        <div className="grid gap-10 lg:grid-cols-2">
+          {categories.map((category) => (
             <div className="flex flex-col gap-4" key={category}>
-              <h2 className="font-display text-2xl tracking-tight md:text-3xl">
+              <h3 className="font-display text-xl tracking-tight">
                 {category}
-              </h2>
+              </h3>
               <Accordion collapsible type="single">
                 {grouped[category]?.map((faq) => (
                   <AccordionItem key={faq.id} value={faq.id}>
@@ -60,15 +58,9 @@ const FaqsPage = async () => {
                 ))}
               </Accordion>
             </div>
-          ))
-        ) : (
-          <p className="text-muted-foreground">
-            FAQs will be published here soon.
-          </p>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
 };
-
-export default FaqsPage;

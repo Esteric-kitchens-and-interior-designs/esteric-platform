@@ -1,19 +1,17 @@
-import { createMetadata } from "@repo/seo/metadata";
 import { format } from "date-fns";
 import { Award, BadgeCheck } from "lucide-react";
-import type { Metadata } from "next";
 import { ImagePlaceholder } from "@/components/image-placeholder";
-import { getPublishedCertifications } from "@/lib/queries";
+import type { getPublishedCertifications } from "@/lib/queries";
 
-export const generateMetadata = (): Metadata =>
-  createMetadata({
-    title: "Certifications & Awards",
-    description:
-      "Certifications and industry awards earned by Esteric Kitchens & Interior Designs.",
-  });
+interface CertificationsProps {
+  readonly items: Awaited<ReturnType<typeof getPublishedCertifications>>;
+}
 
-const CertificationsPage = async () => {
-  const items = await getPublishedCertifications();
+export const Certifications = ({ items }: CertificationsProps) => {
+  if (items.length === 0) {
+    return null;
+  }
+
   const certifications = items.filter((item) => item.type === "CERTIFICATION");
   const awards = items.filter((item) => item.type === "AWARD");
 
@@ -23,13 +21,13 @@ const CertificationsPage = async () => {
   ] as const;
 
   return (
-    <div className="w-full py-16 lg:py-24">
+    <div className="w-full scroll-mt-20 py-16 lg:py-24" id="certifications">
       <div className="container mx-auto flex flex-col gap-14">
         <div className="flex flex-col gap-2">
-          <h1 className="max-w-xl font-display font-regular text-4xl tracking-tighter md:text-5xl">
+          <h2 className="max-w-xl text-left font-display font-regular text-3xl tracking-tighter md:text-5xl">
             Certifications & Awards
-          </h1>
-          <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
+          </h2>
+          <p className="max-w-xl text-left text-lg text-muted-foreground leading-relaxed tracking-tight">
             Recognition and credentials that reflect our commitment to quality
             and professional standards.
           </p>
@@ -38,9 +36,9 @@ const CertificationsPage = async () => {
         {groups.map((group) =>
           group.items.length > 0 ? (
             <div className="flex flex-col gap-6" key={group.title}>
-              <h2 className="font-display text-2xl tracking-tight md:text-3xl">
+              <h3 className="font-display text-xl tracking-tight md:text-2xl">
                 {group.title}
-              </h2>
+              </h3>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {group.items.map((item) => (
                   <div
@@ -79,15 +77,7 @@ const CertificationsPage = async () => {
             </div>
           ) : null
         )}
-
-        {certifications.length === 0 && awards.length === 0 ? (
-          <p className="text-muted-foreground">
-            Certifications and awards will be published here soon.
-          </p>
-        ) : null}
       </div>
     </div>
   );
 };
-
-export default CertificationsPage;

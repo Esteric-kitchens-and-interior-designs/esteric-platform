@@ -1,12 +1,14 @@
 import { createMetadata } from "@repo/seo/metadata";
 import type { Metadata } from "next";
 import {
-  getFaqTeaser,
+  getAllFaqs,
   getFeaturedPortfolioProjects,
   getFeaturedTestimonials,
+  getPublishedCertifications,
 } from "@/lib/queries";
+import { Certifications } from "./components/certifications";
 import { CTA } from "./components/cta";
-import { FaqTeaser } from "./components/faq-teaser";
+import { Faqs } from "./components/faqs";
 import { FeaturedPortfolio } from "./components/featured-portfolio";
 import { Hero } from "./components/hero";
 import { Services } from "./components/services";
@@ -21,9 +23,13 @@ export const generateMetadata = (): Metadata =>
   });
 
 const Home = async () => {
-  const [featuredProjects, featuredTestimonials, faqTeaser] = await Promise.all(
-    [getFeaturedPortfolioProjects(), getFeaturedTestimonials(), getFaqTeaser()]
-  );
+  const [featuredProjects, featuredTestimonials, certifications, faqs] =
+    await Promise.all([
+      getFeaturedPortfolioProjects(),
+      getFeaturedTestimonials(),
+      getPublishedCertifications(),
+      getAllFaqs(),
+    ]);
 
   return (
     <>
@@ -32,7 +38,8 @@ const Home = async () => {
       <WhyEsteric />
       <FeaturedPortfolio projects={featuredProjects} />
       <Testimonials testimonials={featuredTestimonials} />
-      <FaqTeaser faqs={faqTeaser} />
+      <Certifications items={certifications} />
+      <Faqs faqs={faqs} />
       <CTA />
     </>
   );

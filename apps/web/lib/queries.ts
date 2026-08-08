@@ -70,13 +70,6 @@ export const getBlogPostBySlug = (slug: string) =>
     include: { author: true },
   });
 
-export const getFaqTeaser = (take = 5) =>
-  database.fAQ.findMany({
-    where: { isPublished: true },
-    orderBy: { sortOrder: "asc" },
-    take,
-  });
-
 export const getAllFaqs = () =>
   database.fAQ.findMany({
     where: { isPublished: true },

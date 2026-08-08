@@ -1,9 +1,9 @@
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { createMetadata } from "@repo/seo/metadata";
+import { format } from "date-fns";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Sidebar } from "@/components/sidebar";
 import { siteConfig } from "@/lib/site-config";
 
 interface LegalSection {
@@ -241,6 +241,16 @@ const legalPages: Record<
 
 type LegalSlug = keyof typeof legalPages;
 
+const legalNav: readonly {
+  readonly slug: LegalSlug;
+  readonly title: string;
+}[] = [
+  { slug: "privacy", title: "Privacy Policy" },
+  { slug: "terms", title: "Terms & Conditions" },
+  { slug: "cookies", title: "Cookie Policy" },
+  { slug: "accessibility", title: "Accessibility Statement" },
+];
+
 interface LegalPageProperties {
   readonly params: Promise<{
     slug: string;
@@ -274,27 +284,40 @@ const LegalPage = async ({ params }: LegalPageProperties) => {
     notFound();
   }
 
+  const otherPages = legalNav.filter((item) => item.slug !== slug);
+
   return (
-    <div className="container max-w-5xl py-16">
-      <Link
-        className="mb-4 inline-flex items-center gap-1 text-muted-foreground text-sm focus:underline focus:outline-none"
-        href="/"
-      >
-        <ArrowLeftIcon className="h-4 w-4" />
-        Back to Home
-      </Link>
-      <h1 className="scroll-m-20 text-balance font-display font-extrabold text-4xl tracking-tight lg:text-5xl">
-        {page.title}
-      </h1>
-      <p className="text-balance leading-7 [&:not(:first-child)]:mt-6">
-        {page.description}
-      </p>
-      <div className="mt-16 flex flex-col items-start gap-8 sm:flex-row">
-        <div className="sm:flex-1">
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
+    <div className="w-full py-16 lg:py-24">
+      <div className="container mx-auto max-w-6xl">
+        <Link
+          className="mb-8 inline-flex items-center gap-1 text-muted-foreground text-sm transition-colors hover:text-primary focus:underline focus:outline-none"
+          href="/"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          Back to Home
+        </Link>
+
+        <div className="flex flex-col gap-3 border-b pb-8">
+          <h1 className="max-w-2xl font-display font-regular text-4xl tracking-tighter md:text-5xl">
+            {page.title}
+          </h1>
+          <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed">
+            {page.description}
+          </p>
+          <p className="text-muted-foreground text-sm">
+            Last updated {format(new Date(page.lastUpdated), "MMMM d, yyyy")}
+          </p>
+        </div>
+
+        <div className="grid gap-12 pt-10 lg:grid-cols-[1fr_260px]">
+          <div className="prose prose-neutral dark:prose-invert prose-h2:mt-12 prose-h2:mb-4 max-w-none prose-headings:font-display prose-headings:font-regular prose-h2:text-2xl prose-li:leading-relaxed prose-p:leading-relaxed prose-headings:tracking-tight">
             <p>{page.intro}</p>
-            {page.sections.map((section) => (
-              <div key={section.heading}>
+            {page.sections.map((section, index) => (
+              <div
+                className="scroll-mt-24"
+                id={`section-${index + 1}`}
+                key={section.heading}
+              >
                 <h2>{section.heading}</h2>
                 {section.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
@@ -309,9 +332,37 @@ const LegalPage = async ({ params }: LegalPageProperties) => {
               </div>
             ))}
           </div>
-        </div>
-        <div className="sticky top-24 hidden shrink-0 md:block">
-          <Sidebar date={new Date(page.lastUpdated)} readingTime="6 min read" />
+
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 flex flex-col gap-8">
+              <nav className="flex flex-col gap-1 border-l pl-4 text-sm">
+                <p className="mb-2 font-medium text-foreground">On this page</p>
+                {page.sections.map((section, index) => (
+                  <a
+                    className="py-1 text-muted-foreground transition-colors hover:text-primary"
+                    href={`#section-${index + 1}`}
+                    key={section.heading}
+                  >
+                    {section.heading}
+                  </a>
+                ))}
+              </nav>
+              <div className="flex flex-col gap-1 border-l pl-4 text-sm">
+                <p className="mb-2 font-medium text-foreground">
+                  Other policies
+                </p>
+                {otherPages.map((item) => (
+                  <Link
+                    className="py-1 text-muted-foreground transition-colors hover:text-primary"
+                    href={`/legal/${item.slug}`}
+                    key={item.slug}
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </div>

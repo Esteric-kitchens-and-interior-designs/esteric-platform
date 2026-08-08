@@ -27,10 +27,10 @@ const footerColumns = [
     links: [
       { title: "About Us", href: "/about" },
       { title: "Portfolio", href: "/portfolio" },
-      { title: "Testimonials", href: "/testimonials" },
-      { title: "Certifications & Awards", href: "/certifications" },
+      { title: "Testimonials", href: "/#testimonials" },
+      { title: "Certifications & Awards", href: "/#certifications" },
       { title: "Blog", href: "/blog" },
-      { title: "FAQs", href: "/faqs" },
+      { title: "FAQs", href: "/#faqs" },
     ],
   },
   {

@@ -3,9 +3,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@repo/design-system/components/ui/avatar";
-import { Button } from "@repo/design-system/components/ui/button";
-import { MoveRight, Quote } from "lucide-react";
-import Link from "next/link";
+import { Quote } from "lucide-react";
 import { RatingStars } from "@/components/rating-stars";
 import type { getFeaturedTestimonials } from "@/lib/queries";
 
@@ -19,17 +17,18 @@ export const Testimonials = ({ testimonials }: TestimonialsProps) => {
   }
 
   return (
-    <div className="w-full bg-muted/40 py-16 lg:py-24">
+    <div
+      className="w-full scroll-mt-20 bg-muted/40 py-16 lg:py-24"
+      id="testimonials"
+    >
       <div className="container mx-auto flex flex-col gap-10">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-2">
           <h2 className="max-w-xl text-left font-display font-regular text-3xl tracking-tighter md:text-5xl">
             What our clients say
           </h2>
-          <Button asChild className="gap-2 self-start" variant="outline">
-            <Link href="/testimonials">
-              Read all reviews <MoveRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          <p className="max-w-xl text-left text-lg text-muted-foreground leading-relaxed tracking-tight">
+            Real feedback from homeowners and clients we've worked with.
+          </p>
         </div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {testimonials.map((testimonial) => (

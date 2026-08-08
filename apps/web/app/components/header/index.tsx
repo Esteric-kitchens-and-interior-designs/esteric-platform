@@ -14,7 +14,6 @@ import { Menu, MoveRight, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { env } from "@/env";
 import { services } from "@/lib/services";
 
 interface NavItem {
@@ -38,9 +37,9 @@ const navigationItems: NavItem[] = [
   },
   { title: "Portfolio", href: "/portfolio" },
   { title: "Blog", href: "/blog" },
-  { title: "Testimonials", href: "/testimonials" },
-  { title: "Certifications", href: "/certifications" },
-  { title: "FAQs", href: "/faqs" },
+  { title: "Testimonials", href: "/#testimonials" },
+  { title: "Certifications", href: "/#certifications" },
+  { title: "FAQs", href: "/#faqs" },
   { title: "Contact", href: "/contact" },
 ];
 
@@ -117,12 +116,6 @@ export const Header = () => {
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
           <ModeToggle />
-          <Link
-            className="whitespace-nowrap text-muted-foreground text-sm underline-offset-4 hover:underline"
-            href={`${env.NEXT_PUBLIC_APP_URL}/sign-in`}
-          >
-            Staff Sign In
-          </Link>
           <Button asChild className="gap-2">
             <Link href="/quote">
               Get a Quote <MoveRight className="h-4 w-4" />
@@ -180,12 +173,6 @@ export const Header = () => {
                   Get a Quote <MoveRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Link
-                className="text-center text-muted-foreground text-sm underline-offset-4 hover:underline"
-                href={`${env.NEXT_PUBLIC_APP_URL}/sign-in`}
-              >
-                Staff Sign In
-              </Link>
             </div>
           </div>
         ) : null}
