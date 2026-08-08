@@ -6,8 +6,11 @@ import {
   MapPin,
   Phone as PhoneIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { TikTokIcon } from "@/components/tiktok-icon";
+import { XIcon } from "@/components/x-icon";
 import { services } from "@/lib/services";
 import { siteConfig } from "@/lib/site-config";
 
@@ -49,9 +52,10 @@ const footerColumns = [
   },
 ];
 
-// TODO: replace with real social profile URLs before launch.
 const socialLinks = [
   { title: "Instagram", href: siteConfig.social.instagram, icon: Instagram },
+  { title: "TikTok", href: siteConfig.social.tiktok, icon: TikTokIcon },
+  { title: "X", href: siteConfig.social.x, icon: XIcon },
   { title: "Facebook", href: siteConfig.social.facebook, icon: Facebook },
   { title: "LinkedIn", href: siteConfig.social.linkedin, icon: Linkedin },
 ];
@@ -62,6 +66,13 @@ export const Footer = () => (
       <div className="container mx-auto flex flex-col gap-14">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_2fr]">
           <div className="flex flex-col items-start gap-6">
+            <Image
+              alt="Esteric Kitchens & Interior Designs"
+              className="h-14 w-14"
+              height={112}
+              src="/images/logo/esteric-mark.png"
+              width={112}
+            />
             <div className="flex flex-col gap-2">
               <h2 className="max-w-xl text-left font-display font-regular text-3xl tracking-tighter md:text-4xl">
                 {siteConfig.name}
@@ -83,7 +94,6 @@ export const Footer = () => (
                 <a className="hover:underline" href={siteConfig.phoneHref}>
                   {siteConfig.phone}
                 </a>
-                <span className="text-xs opacity-60">(TODO: real number)</span>
               </span>
             </div>
             <div className="flex flex-col gap-2">

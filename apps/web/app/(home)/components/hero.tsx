@@ -1,7 +1,7 @@
 import { Button } from "@repo/design-system/components/ui/button";
-import { CalendarCheck, HouseIcon, MoveRight } from "lucide-react";
+import { CalendarCheck, MoveRight } from "lucide-react";
 import Link from "next/link";
-import { ImagePlaceholder } from "@/components/image-placeholder";
+import { HeroSlider } from "./hero-slider";
 
 export const Hero = () => (
   <div className="w-full">
@@ -32,13 +32,7 @@ export const Hero = () => (
             </Button>
           </div>
         </div>
-        {/* TODO: replace with a hero photograph of a signature Esteric kitchen or living space */}
-        <ImagePlaceholder
-          className="aspect-[4/3] w-full"
-          icon={HouseIcon}
-          label="Signature Project"
-          tone="gold"
-        />
+        <HeroSlider />
       </div>
     </div>
   </div>

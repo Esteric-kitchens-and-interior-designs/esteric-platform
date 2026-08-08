@@ -13,12 +13,10 @@ export const siteConfig = {
     line2: "Nairobi, Kenya",
     full: "Waiyaki Way, Westlands, Nairobi, Kenya",
   },
-  // TODO: replace with real contact details before launch.
-  phone: "+254 700 000 000",
-  phoneHref: "tel:+254700000000",
+  phone: "+254 723 993 333",
+  phoneHref: "tel:+254723993333",
   email: "hello@ekiinteriors.com",
-  // TODO: replace with the real WhatsApp Business number (digits only, with country code, no leading +).
-  whatsappNumber: "254700000000",
+  whatsappNumber: "254723993333",
   whatsappMessage:
     "Hello Esteric, I'd like to enquire about your design services.",
   hours: [
@@ -32,11 +30,12 @@ export const siteConfig = {
   googleMapsLinkSrc:
     "https://maps.google.com/?q=Waiyaki+Way,+Westlands,+Nairobi,+Kenya",
   social: {
-    // TODO: replace with the real social profile URLs.
-    instagram: "https://instagram.com/estericinteriors",
-    facebook: "https://facebook.com/estericinteriors",
-    pinterest: "https://pinterest.com/estericinteriors",
-    linkedin: "https://linkedin.com/company/estericinteriors",
+    instagram: "https://www.instagram.com/ekiinteriors",
+    tiktok: "https://www.tiktok.com/@ekiinteriors",
+    x: "https://x.com/ekiinteriors",
+    facebook: "https://www.facebook.com/EstericKitchensandInteriorDesigns",
+    linkedin:
+      "https://www.linkedin.com/company/esteric-kitchens-interior-designs",
   },
 } as const;
 

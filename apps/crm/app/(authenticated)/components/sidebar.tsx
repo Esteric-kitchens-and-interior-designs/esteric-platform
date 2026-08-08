@@ -23,7 +23,6 @@ import {
   ClipboardList,
   FileText,
   Gauge,
-  Gem,
   History,
   Image as ImageIcon,
   LayoutDashboard,
@@ -34,6 +33,7 @@ import {
   Users,
   Users2,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -180,7 +180,13 @@ export const GlobalSidebar = ({
             <SidebarMenuItem>
               <SidebarMenuButton asChild size="lg">
                 <Link href="/">
-                  <Gem className="text-gold" />
+                  <Image
+                    alt="Esteric"
+                    className="size-6 shrink-0"
+                    height={48}
+                    src="/images/logo/esteric-mark.png"
+                    width={48}
+                  />
                   <div className="flex flex-col gap-0.5 leading-none">
                     <span className="font-display font-semibold">
                       Esteric CRM

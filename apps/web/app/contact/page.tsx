@@ -48,10 +48,7 @@ const ContactPage = () => (
                   href={siteConfig.phoneHref}
                 >
                   {siteConfig.phone}
-                </a>{" "}
-                <span className="text-muted-foreground text-xs opacity-60">
-                  (TODO: real number)
-                </span>
+                </a>
               </div>
             </div>
             <div className="flex items-start gap-3">

@@ -11,6 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "@repo/design-system/components/ui/navigation-menu";
 import { Menu, MoveRight, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { env } from "@/env";
@@ -49,7 +50,14 @@ export const Header = () => {
   return (
     <header className="sticky top-0 left-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
       <div className="container relative mx-auto flex min-h-20 flex-row items-center justify-between gap-4">
-        <Link className="flex shrink-0 items-center gap-2" href="/">
+        <Link className="flex shrink-0 items-center gap-2.5" href="/">
+          <Image
+            alt="Esteric Kitchens & Interior Designs"
+            className="h-10 w-10 shrink-0"
+            height={80}
+            src="/images/logo/esteric-mark.png"
+            width={80}
+          />
           <span className="whitespace-nowrap font-display text-lg tracking-tight">
             Esteric
             <span className="text-primary"> Kitchens</span>

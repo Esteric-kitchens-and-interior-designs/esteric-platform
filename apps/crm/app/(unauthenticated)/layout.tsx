@@ -1,5 +1,5 @@
 import { ModeToggle } from "@repo/design-system/components/mode-toggle";
-import { Gem } from "lucide-react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 interface AuthLayoutProps {
@@ -12,7 +12,13 @@ const AuthLayout = ({ children }: AuthLayoutProps) => (
   <div className="container relative grid h-dvh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
     <div className="relative hidden h-full flex-col bg-charcoal p-10 text-secondary-foreground lg:flex">
       <div className="relative z-20 flex items-center gap-2 font-display font-medium text-gold text-lg">
-        <Gem className="h-6 w-6" />
+        <Image
+          alt="Esteric"
+          className="h-7 w-7"
+          height={56}
+          src="/images/logo/esteric-mark.png"
+          width={56}
+        />
         Esteric CRM
       </div>
       <div className="absolute top-4 right-4">

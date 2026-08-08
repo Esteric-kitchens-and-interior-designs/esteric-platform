@@ -1,5 +1,6 @@
 import { Button } from "@repo/design-system/components/ui/button";
 import { CheckCircle2, MoveRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { PortfolioCard } from "@/components/portfolio-card";
@@ -42,14 +43,46 @@ export const ServicePageContent = async ({
               </Button>
             </div>
           </div>
-          {/* TODO: replace with a hero photograph representative of this service */}
-          <ImagePlaceholder
-            className="aspect-[4/3] w-full"
-            icon={service.icon}
-            label={service.shortTitle}
-            tone="gold"
-          />
+          {service.images[0] ? (
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
+              <Image
+                alt={service.images[0].alt}
+                className="object-cover"
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={service.images[0].src}
+              />
+            </div>
+          ) : (
+            // TODO: no photography for this service yet — replace once available.
+            <ImagePlaceholder
+              className="aspect-[4/3] w-full"
+              icon={service.icon}
+              label={service.shortTitle}
+              tone="gold"
+            />
+          )}
         </div>
+
+        {service.images.length > 1 ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {service.images.slice(1).map((image) => (
+              <div
+                className="relative aspect-square overflow-hidden rounded-md"
+                key={image.src}
+              >
+                <Image
+                  alt={image.alt}
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 50vw"
+                  src={image.src}
+                />
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div className="grid gap-10 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
