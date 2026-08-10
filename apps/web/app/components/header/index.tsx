@@ -37,9 +37,6 @@ const navigationItems: NavItem[] = [
   },
   { title: "Portfolio", href: "/portfolio" },
   { title: "Blog", href: "/blog" },
-  { title: "Testimonials", href: "/#testimonials" },
-  { title: "Certifications", href: "/#certifications" },
-  { title: "FAQs", href: "/#faqs" },
   { title: "Careers", href: "/careers" },
   { title: "Contact", href: "/contact" },
 ];
