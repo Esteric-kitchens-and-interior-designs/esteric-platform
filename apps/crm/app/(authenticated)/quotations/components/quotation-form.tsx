@@ -197,7 +197,7 @@ export const QuotationForm = ({
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-12 gap-2 px-1 font-medium text-muted-foreground text-xs">
+            <div className="hidden gap-2 px-1 font-medium text-muted-foreground text-xs sm:grid sm:grid-cols-12">
               <div className="col-span-6">Description</div>
               <div className="col-span-2">Qty</div>
               <div className="col-span-2">Unit price</div>
@@ -205,11 +205,11 @@ export const QuotationForm = ({
             </div>
             {rows.map((row) => (
               <div
-                className="grid grid-cols-12 items-center gap-2"
+                className="grid grid-cols-2 items-center gap-2 rounded-md border p-2 sm:grid-cols-12 sm:border-none sm:p-0"
                 key={row.key}
               >
                 <Input
-                  className="col-span-6"
+                  className="col-span-2 sm:col-span-6"
                   onChange={(event) =>
                     updateRow(row.key, { description: event.target.value })
                   }
@@ -217,25 +217,27 @@ export const QuotationForm = ({
                   value={row.description}
                 />
                 <Input
-                  className="col-span-2"
+                  className="col-span-1 sm:col-span-2"
                   min={0}
                   onChange={(event) =>
                     updateRow(row.key, {
                       quantity: Number(event.target.value),
                     })
                   }
+                  placeholder="Qty"
                   step="0.01"
                   type="number"
                   value={row.quantity}
                 />
                 <Input
-                  className="col-span-2"
+                  className="col-span-1 sm:col-span-2"
                   min={0}
                   onChange={(event) =>
                     updateRow(row.key, {
                       unitPrice: Number(event.target.value),
                     })
                   }
+                  placeholder="Unit price"
                   step="0.01"
                   type="number"
                   value={row.unitPrice}

@@ -1,6 +1,7 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { CertificationForm } from "../components/certification-form";
 
 interface EditCertificationPageProps {
@@ -25,29 +26,40 @@ const EditCertificationPage = async ({
     notFound();
   }
 
+  const canWrite = hasPermission(staffUser, "content:write");
+
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">{record.title}</h1>
+    <>
+      <Header
+        page={record.title}
+        pages={["Content", "Certifications & Awards"]}
+      />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">
+            {record.title}
+          </h1>
+        </div>
+        <div className="max-w-2xl">
+          <CertificationForm
+            certificationId={record.id}
+            initialValue={{
+              title: record.title,
+              issuer: record.issuer,
+              type: record.type,
+              dateAwarded: record.dateAwarded
+                ? record.dateAwarded.toISOString().slice(0, 10)
+                : null,
+              imageUrl: record.imageUrl,
+              description: record.description,
+              isPublished: record.isPublished,
+            }}
+            mode="edit"
+            readOnly={!canWrite}
+          />
+        </div>
       </div>
-      <div className="max-w-2xl">
-        <CertificationForm
-          certificationId={record.id}
-          initialValue={{
-            title: record.title,
-            issuer: record.issuer,
-            type: record.type,
-            dateAwarded: record.dateAwarded
-              ? record.dateAwarded.toISOString().slice(0, 10)
-              : null,
-            imageUrl: record.imageUrl,
-            description: record.description,
-            isPublished: record.isPublished,
-          }}
-          mode="edit"
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

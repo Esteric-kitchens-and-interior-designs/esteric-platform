@@ -28,9 +28,15 @@ interface BlogFormProps {
   initialValue?: Partial<BlogFormPayload>;
   mode: "create" | "edit";
   postId?: string;
+  readOnly?: boolean;
 }
 
-export const BlogForm = ({ mode, postId, initialValue }: BlogFormProps) => {
+export const BlogForm = ({
+  mode,
+  postId,
+  initialValue,
+  readOnly,
+}: BlogFormProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -207,8 +213,17 @@ export const BlogForm = ({ mode, postId, initialValue }: BlogFormProps) => {
         {error ? (
           <p className="text-destructive text-sm sm:col-span-2">{error}</p>
         ) : null}
+        {readOnly ? (
+          <p className="text-muted-foreground text-sm sm:col-span-2">
+            You have view-only access — changes cannot be saved.
+          </p>
+        ) : null}
         <div className="flex gap-2 sm:col-span-2">
-          <Button disabled={isPending} onClick={handleSubmit} type="button">
+          <Button
+            disabled={isPending || readOnly}
+            onClick={handleSubmit}
+            type="button"
+          >
             {submitLabel(isPending, mode)}
           </Button>
           <Button onClick={() => router.back()} type="button" variant="ghost">

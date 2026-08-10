@@ -29,6 +29,7 @@ import { Mail } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ExportCsvButton } from "../../components/export-csv-button";
+import { Header } from "../../components/header";
 import { formatDate } from "../lib/helpers";
 
 interface NewsletterPageProps {
@@ -54,110 +55,113 @@ const NewsletterPage = async ({ searchParams }: NewsletterPageProps) => {
   });
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">Newsletter</h1>
-          <p className="text-muted-foreground text-sm">
-            Subscribers collected from the public site.
-          </p>
+    <>
+      <Header page="Newsletter" pages={["Content"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">Newsletter</h1>
+            <p className="text-muted-foreground text-sm">
+              Subscribers collected from the public site.
+            </p>
+          </div>
+          <ExportCsvButton
+            filename="newsletter-subscribers"
+            headers={["Email", "Name", "Status", "Source", "Subscribed at"]}
+            rows={subscribers.map((s) => [
+              s.email,
+              s.name ?? "",
+              s.status,
+              s.source ?? "",
+              s.subscribedAt.toISOString(),
+            ])}
+          />
         </div>
-        <ExportCsvButton
-          filename="newsletter-subscribers"
-          headers={["Email", "Name", "Status", "Source", "Subscribed at"]}
-          rows={subscribers.map((s) => [
-            s.email,
-            s.name ?? "",
-            s.status,
-            s.source ?? "",
-            s.subscribedAt.toISOString(),
-          ])}
-        />
-      </div>
 
-      <form className="flex flex-wrap items-center gap-3" method="get">
-        <Input
-          className="w-64"
-          defaultValue={q ?? ""}
-          name="q"
-          placeholder="Search by email"
-        />
-        <Select defaultValue={status ?? "ALL"} name="status">
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All statuses</SelectItem>
-            <SelectItem value="SUBSCRIBED">Subscribed</SelectItem>
-            <SelectItem value="UNSUBSCRIBED">Unsubscribed</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button size="sm" type="submit" variant="secondary">
-          Filter
-        </Button>
-        {((status && status !== "ALL") || q) && (
-          <Button asChild size="sm" variant="ghost">
-            <Link href="/content/newsletter">Clear</Link>
+        <form className="flex flex-wrap items-center gap-3" method="get">
+          <Input
+            className="w-64"
+            defaultValue={q ?? ""}
+            name="q"
+            placeholder="Search by email"
+          />
+          <Select defaultValue={status ?? "ALL"} name="status">
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All statuses</SelectItem>
+              <SelectItem value="SUBSCRIBED">Subscribed</SelectItem>
+              <SelectItem value="UNSUBSCRIBED">Unsubscribed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button size="sm" type="submit" variant="secondary">
+            Filter
           </Button>
-        )}
-      </form>
+          {((status && status !== "ALL") || q) && (
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/content/newsletter">Clear</Link>
+            </Button>
+          )}
+        </form>
 
-      {subscribers.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Mail />
-            </EmptyMedia>
-            <EmptyTitle>No subscribers found</EmptyTitle>
-            <EmptyDescription>
-              Try adjusting your filters, or check back once the public site is
-              collecting signups.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead>Subscribed</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {subscribers.map((subscriber) => (
-                <TableRow key={subscriber.id}>
-                  <TableCell className="font-medium">
-                    {subscriber.email}
-                  </TableCell>
-                  <TableCell>{subscriber.name ?? "-"}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        subscriber.status === "SUBSCRIBED"
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      {subscriber.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {subscriber.source ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(subscriber.subscribedAt)}
-                  </TableCell>
+        {subscribers.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Mail />
+              </EmptyMedia>
+              <EmptyTitle>No subscribers found</EmptyTitle>
+              <EmptyDescription>
+                Try adjusting your filters, or check back once the public site
+                is collecting signups.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Subscribed</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
+              </TableHeader>
+              <TableBody>
+                {subscribers.map((subscriber) => (
+                  <TableRow key={subscriber.id}>
+                    <TableCell className="font-medium">
+                      {subscriber.email}
+                    </TableCell>
+                    <TableCell>{subscriber.name ?? "-"}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          subscriber.status === "SUBSCRIBED"
+                            ? "default"
+                            : "outline"
+                        }
+                      >
+                        {subscriber.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {subscriber.source ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(subscriber.subscribedAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

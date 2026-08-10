@@ -94,6 +94,8 @@ const CustomerDetailPage = async ({ params }: CustomerDetailPageProperties) => {
     notFound();
   }
 
+  const canWrite = hasPermission(staffUser, "customers:write");
+
   const address = [
     customer.addressLine1,
     customer.addressLine2,
@@ -241,6 +243,7 @@ const CustomerDetailPage = async ({ params }: CustomerDetailPageProperties) => {
               </CardHeader>
               <CardContent>
                 <CustomerNoteThread
+                  canWrite={canWrite}
                   customerId={customer.id}
                   notes={customer.notes}
                 />
@@ -257,6 +260,7 @@ const CustomerDetailPage = async ({ params }: CustomerDetailPageProperties) => {
               </CardHeader>
               <CardContent>
                 <CommunicationLog
+                  canWrite={canWrite}
                   communications={customer.communications}
                   customerId={customer.id}
                 />

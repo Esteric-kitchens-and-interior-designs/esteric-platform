@@ -25,7 +25,9 @@ interface Milestone {
 export const MilestonesSection = ({
   projectId,
   milestones,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   projectId: string;
   milestones: Milestone[];
 }) => {
@@ -80,7 +82,7 @@ export const MilestonesSection = ({
               <li className="flex items-center gap-3" key={milestone.id}>
                 <Checkbox
                   checked={!!milestone.completedAt}
-                  disabled={isPending}
+                  disabled={isPending || !canWrite}
                   onCheckedChange={(checked) =>
                     handleToggle(milestone.id, checked === true)
                   }
@@ -106,29 +108,31 @@ export const MilestonesSection = ({
             ))}
           </ul>
         )}
-        <div className="flex gap-2 border-t pt-3">
-          <Input
-            className="flex-1"
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Milestone name"
-            value={name}
-          />
-          <Input
-            className="w-40"
-            onChange={(event) => setDueDate(event.target.value)}
-            type="date"
-            value={dueDate}
-          />
-          <Button
-            disabled={isPending}
-            onClick={handleAdd}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            Add
-          </Button>
-        </div>
+        {canWrite ? (
+          <div className="flex gap-2 border-t pt-3">
+            <Input
+              className="flex-1"
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Milestone name"
+              value={name}
+            />
+            <Input
+              className="w-40"
+              onChange={(event) => setDueDate(event.target.value)}
+              type="date"
+              value={dueDate}
+            />
+            <Button
+              disabled={isPending}
+              onClick={handleAdd}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              Add
+            </Button>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

@@ -68,6 +68,21 @@ export const QuotationActionButtons = ({
     });
   };
 
+  const handleReject = () => {
+    startTransition(async () => {
+      try {
+        await rejectQuotation(quotationId, rejectReason);
+        toast.success("Quotation rejected");
+        setRejectOpen(false);
+        setRejectReason("");
+        router.refresh();
+      } catch (err) {
+        unstable_rethrow(err);
+        toast.error(err instanceof Error ? err.message : "Action failed");
+      }
+    });
+  };
+
   return (
     <div className="flex flex-wrap gap-2">
       {canWrite && status === "DRAFT" && (
@@ -126,13 +141,7 @@ export const QuotationActionButtons = ({
             <DialogFooter>
               <Button
                 disabled={isPending || !rejectReason.trim()}
-                onClick={() => {
-                  run(
-                    () => rejectQuotation(quotationId, rejectReason),
-                    "Quotation rejected"
-                  );
-                  setRejectOpen(false);
-                }}
+                onClick={handleReject}
                 variant="destructive"
               >
                 Confirm rejection

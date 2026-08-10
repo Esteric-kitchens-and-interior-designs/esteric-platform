@@ -100,34 +100,38 @@ const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
           />
         </div>
 
-        {before.length > 0 && after.length > 0 ? (
+        {before.length > 0 || after.length > 0 ? (
           <div className="flex flex-col gap-6">
             <h2 className="font-display text-2xl tracking-tight md:text-3xl">
               Before & After
             </h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <span className="text-muted-foreground text-xs uppercase tracking-widest">
-                  Before
-                </span>
-                {/* TODO: replace with real "before" photography */}
-                <ImagePlaceholder
-                  className="aspect-square w-full"
-                  label="Before"
-                  tone="charcoal"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-muted-foreground text-xs uppercase tracking-widest">
-                  After
-                </span>
-                {/* TODO: replace with real "after" photography */}
-                <ImagePlaceholder
-                  className="aspect-square w-full"
-                  label="After"
-                  tone="gold"
-                />
-              </div>
+              {before.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <span className="text-muted-foreground text-xs uppercase tracking-widest">
+                    Before
+                  </span>
+                  {/* TODO: replace with real "before" photography */}
+                  <ImagePlaceholder
+                    className="aspect-square w-full"
+                    label="Before"
+                    tone="charcoal"
+                  />
+                </div>
+              ) : null}
+              {after.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <span className="text-muted-foreground text-xs uppercase tracking-widest">
+                    After
+                  </span>
+                  {/* TODO: replace with real "after" photography */}
+                  <ImagePlaceholder
+                    className="aspect-square w-full"
+                    label="After"
+                    tone="gold"
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         ) : null}

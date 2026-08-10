@@ -28,7 +28,9 @@ interface Update {
 export const UpdatesSection = ({
   projectId,
   updates,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   projectId: string;
   updates: Update[];
 }) => {
@@ -72,49 +74,51 @@ export const UpdatesSection = ({
         <CardTitle>Progress updates</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2 rounded-lg border p-3">
-          <Textarea
-            onChange={(event) => setNote(event.target.value)}
-            placeholder="What happened on site today?"
-            rows={3}
-            value={note}
-          />
-          <div className="flex flex-wrap gap-2">
-            <div className="space-y-1">
-              <Label className="text-xs" htmlFor="completion">
-                Completion %
-              </Label>
-              <Input
-                className="w-28"
-                id="completion"
-                max={100}
-                min={0}
-                onChange={(event) => setCompletion(event.target.value)}
-                type="number"
-                value={completion}
-              />
+        {canWrite ? (
+          <div className="space-y-2 rounded-lg border p-3">
+            <Textarea
+              onChange={(event) => setNote(event.target.value)}
+              placeholder="What happened on site today?"
+              rows={3}
+              value={note}
+            />
+            <div className="flex flex-wrap gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs" htmlFor="completion">
+                  Completion %
+                </Label>
+                <Input
+                  className="w-28"
+                  id="completion"
+                  max={100}
+                  min={0}
+                  onChange={(event) => setCompletion(event.target.value)}
+                  type="number"
+                  value={completion}
+                />
+              </div>
+              <div className="flex-1 space-y-1">
+                <Label className="text-xs" htmlFor="imageUrls">
+                  Image URLs (comma-separated)
+                </Label>
+                <Input
+                  id="imageUrls"
+                  onChange={(event) => setImageUrls(event.target.value)}
+                  placeholder="https://…, https://…"
+                  value={imageUrls}
+                />
+              </div>
             </div>
-            <div className="flex-1 space-y-1">
-              <Label className="text-xs" htmlFor="imageUrls">
-                Image URLs (comma-separated)
-              </Label>
-              <Input
-                id="imageUrls"
-                onChange={(event) => setImageUrls(event.target.value)}
-                placeholder="https://…, https://…"
-                value={imageUrls}
-              />
-            </div>
+            <Button
+              disabled={isPending}
+              onClick={handleAdd}
+              size="sm"
+              type="button"
+            >
+              Post update
+            </Button>
           </div>
-          <Button
-            disabled={isPending}
-            onClick={handleAdd}
-            size="sm"
-            type="button"
-          >
-            Post update
-          </Button>
-        </div>
+        ) : null}
 
         {updates.length === 0 ? (
           <p className="text-muted-foreground text-sm">No updates yet.</p>

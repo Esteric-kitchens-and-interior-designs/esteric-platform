@@ -1,6 +1,7 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { redirect } from "next/navigation";
+import { Header } from "../../components/header";
 import { ProjectForm } from "../components/project-form";
 
 interface NewProjectPageProps {
@@ -36,31 +37,34 @@ const NewProjectPage = async ({ searchParams }: NewProjectPageProps) => {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">New project</h1>
-        <p className="text-muted-foreground text-sm">
-          Kick off a project from scratch, or convert an approved quotation.
-        </p>
+    <>
+      <Header page="New project" pages={["Projects"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">New project</h1>
+          <p className="text-muted-foreground text-sm">
+            Kick off a project from scratch, or convert an approved quotation.
+          </p>
+        </div>
+        <div className="max-w-3xl">
+          <ProjectForm
+            customers={customers.map((c) => ({
+              value: c.id,
+              label: c.name,
+              description: c.email,
+            }))}
+            initialCustomerId={prefill?.customerId ?? null}
+            initialQuotationId={prefill?.id ?? null}
+            initialTitle={prefill?.title ?? null}
+            quotations={approvedQuotations.map((q) => ({
+              value: q.id,
+              label: q.quoteNumber,
+              description: q.title,
+            }))}
+          />
+        </div>
       </div>
-      <div className="max-w-3xl">
-        <ProjectForm
-          customers={customers.map((c) => ({
-            value: c.id,
-            label: c.name,
-            description: c.email,
-          }))}
-          initialCustomerId={prefill?.customerId ?? null}
-          initialQuotationId={prefill?.id ?? null}
-          initialTitle={prefill?.title ?? null}
-          quotations={approvedQuotations.map((q) => ({
-            value: q.id,
-            label: q.quoteNumber,
-            description: q.title,
-          }))}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

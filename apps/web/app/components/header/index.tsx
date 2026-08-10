@@ -123,13 +123,17 @@ export const Header = () => {
 
         <div className="flex items-center gap-2 lg:hidden">
           <ModeToggle />
-          <Button onClick={() => setOpen(!isOpen)} size="icon" variant="ghost">
+          <Button
+            onClick={() => setOpen(!isOpen)}
+            size="icon-lg"
+            variant="ghost"
+          >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
         {isOpen ? (
-          <div className="container absolute top-20 right-0 flex w-full flex-col gap-6 border-t bg-background py-6 shadow-lg lg:hidden">
+          <div className="container absolute top-20 right-0 flex max-h-[calc(100dvh-5rem)] w-full flex-col gap-6 overflow-y-auto border-t bg-background py-6 pb-28 shadow-lg lg:hidden">
             {navigationItems.map((item) => (
               <div key={item.title}>
                 <div className="flex flex-col gap-2">

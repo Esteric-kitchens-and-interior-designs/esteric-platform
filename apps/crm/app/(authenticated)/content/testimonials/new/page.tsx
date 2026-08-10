@@ -1,6 +1,7 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { TestimonialForm } from "../components/testimonial-form";
 
 const NewTestimonialPage = async () => {
@@ -16,20 +17,25 @@ const NewTestimonialPage = async () => {
   });
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">New testimonial</h1>
+    <>
+      <Header page="New testimonial" pages={["Content", "Testimonials"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">
+            New testimonial
+          </h1>
+        </div>
+        <div className="max-w-2xl">
+          <TestimonialForm
+            mode="create"
+            portfolioProjects={portfolioProjects.map((p) => ({
+              value: p.id,
+              label: p.title,
+            }))}
+          />
+        </div>
       </div>
-      <div className="max-w-2xl">
-        <TestimonialForm
-          mode="create"
-          portfolioProjects={portfolioProjects.map((p) => ({
-            value: p.id,
-            label: p.title,
-          }))}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

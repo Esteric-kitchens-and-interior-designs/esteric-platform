@@ -1,6 +1,7 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { QuotationForm } from "../../components/quotation-form";
 
 interface EditQuotationPageProps {
@@ -41,47 +42,53 @@ const EditQuotationPage = async ({ params }: EditQuotationPageProps) => {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">
-          Edit {quotation.quoteNumber}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Draft quotations can be edited freely until they're sent.
-        </p>
-      </div>
-      <QuotationForm
-        customers={customers.map((c) => ({
-          value: c.id,
-          label: c.name,
-          description: c.email,
-        }))}
-        initialValue={{
-          customerId: quotation.customerId,
-          leadId: quotation.leadId,
-          title: quotation.title,
-          currency: quotation.currency,
-          taxRate: Number(quotation.taxRate),
-          discountAmount: Number(quotation.discountAmount),
-          validUntil: quotation.validUntil
-            ? quotation.validUntil.toISOString().slice(0, 10)
-            : null,
-          termsAndConditions: quotation.termsAndConditions,
-          items: quotation.items.map((item) => ({
-            description: item.description,
-            quantity: Number(item.quantity),
-            unitPrice: Number(item.unitPrice),
-          })),
-        }}
-        leads={leads.map((l) => ({
-          value: l.id,
-          label: l.name,
-          description: l.email,
-        }))}
-        mode="edit"
-        quotationId={quotation.id}
+    <>
+      <Header
+        page={`Edit ${quotation.quoteNumber}`}
+        pages={["Quotations", quotation.quoteNumber]}
       />
-    </div>
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">
+            Edit {quotation.quoteNumber}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Draft quotations can be edited freely until they're sent.
+          </p>
+        </div>
+        <QuotationForm
+          customers={customers.map((c) => ({
+            value: c.id,
+            label: c.name,
+            description: c.email,
+          }))}
+          initialValue={{
+            customerId: quotation.customerId,
+            leadId: quotation.leadId,
+            title: quotation.title,
+            currency: quotation.currency,
+            taxRate: Number(quotation.taxRate),
+            discountAmount: Number(quotation.discountAmount),
+            validUntil: quotation.validUntil
+              ? quotation.validUntil.toISOString().slice(0, 10)
+              : null,
+            termsAndConditions: quotation.termsAndConditions,
+            items: quotation.items.map((item) => ({
+              description: item.description,
+              quantity: Number(item.quantity),
+              unitPrice: Number(item.unitPrice),
+            })),
+          }}
+          leads={leads.map((l) => ({
+            value: l.id,
+            label: l.name,
+            description: l.email,
+          }))}
+          mode="edit"
+          quotationId={quotation.id}
+        />
+      </div>
+    </>
   );
 };
 

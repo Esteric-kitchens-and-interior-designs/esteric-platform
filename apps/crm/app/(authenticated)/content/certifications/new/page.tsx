@@ -1,5 +1,6 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { CertificationForm } from "../components/certification-form";
 
 const NewCertificationPage = async () => {
@@ -9,16 +10,19 @@ const NewCertificationPage = async () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">
-          New certification / award
-        </h1>
+    <>
+      <Header page="New entry" pages={["Content", "Certifications & Awards"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">
+            New certification / award
+          </h1>
+        </div>
+        <div className="max-w-2xl">
+          <CertificationForm mode="create" />
+        </div>
       </div>
-      <div className="max-w-2xl">
-        <CertificationForm mode="create" />
-      </div>
-    </div>
+    </>
   );
 };
 

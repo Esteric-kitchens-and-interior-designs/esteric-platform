@@ -37,7 +37,9 @@ export const LeadFollowUpList = ({
   followUps,
   staff,
   currentUserId,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   leadId: string;
   followUps: FollowUp[];
   staff: StaffOption[];
@@ -75,33 +77,44 @@ export const LeadFollowUpList = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <form action={handleSubmit} className="flex flex-col gap-2" ref={formRef}>
-        <Textarea name="note" placeholder="Reminder note…" required rows={2} />
-        <div className="flex flex-wrap items-center gap-2">
-          <Input
-            className="w-auto"
-            defaultValue={new Date().toISOString().slice(0, 16)}
-            name="dueAt"
+      {canWrite ? (
+        <form
+          action={handleSubmit}
+          className="flex flex-col gap-2"
+          ref={formRef}
+        >
+          <Textarea
+            name="note"
+            placeholder="Reminder note…"
             required
-            type="datetime-local"
+            rows={2}
           />
-          <Select defaultValue={currentUserId} name="assignedToId">
-            <SelectTrigger className="w-44" size="sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {staff.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  {s.firstName} {s.lastName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button disabled={isPending} size="sm" type="submit">
-            Add reminder
-          </Button>
-        </div>
-      </form>
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              className="w-auto"
+              defaultValue={new Date().toISOString().slice(0, 16)}
+              name="dueAt"
+              required
+              type="datetime-local"
+            />
+            <Select defaultValue={currentUserId} name="assignedToId">
+              <SelectTrigger className="w-44" size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {staff.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.firstName} {s.lastName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button disabled={isPending} size="sm" type="submit">
+              Add reminder
+            </Button>
+          </div>
+        </form>
+      ) : null}
 
       {followUps.length === 0 ? (
         <p className="text-muted-foreground text-sm">
@@ -142,7 +155,7 @@ export const LeadFollowUpList = ({
                         </Badge>
                       )}
                       <Button
-                        disabled={isPending}
+                        disabled={isPending || !canWrite}
                         onClick={() => handleComplete(f.id)}
                         size="icon-sm"
                         variant="outline"

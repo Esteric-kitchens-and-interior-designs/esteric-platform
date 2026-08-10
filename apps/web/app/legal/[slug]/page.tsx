@@ -309,7 +309,7 @@ const LegalPage = async ({ params }: LegalPageProperties) => {
           </p>
         </div>
 
-        <div className="grid gap-12 pt-10 lg:grid-cols-[1fr_260px]">
+        <div className="grid gap-12 pt-10 md:grid-cols-[1fr_260px]">
           <div className="prose prose-neutral dark:prose-invert prose-h2:mt-12 prose-h2:mb-4 max-w-none prose-headings:font-display prose-headings:font-regular prose-h2:text-2xl prose-li:leading-relaxed prose-p:leading-relaxed prose-headings:tracking-tight">
             <p>{page.intro}</p>
             {page.sections.map((section, index) => (
@@ -333,7 +333,7 @@ const LegalPage = async ({ params }: LegalPageProperties) => {
             ))}
           </div>
 
-          <aside className="hidden lg:block">
+          <aside className="hidden md:block">
             <div className="sticky top-24 flex flex-col gap-8">
               <nav className="flex flex-col gap-1 border-l pl-4 text-sm">
                 <p className="mb-2 font-medium text-foreground">On this page</p>

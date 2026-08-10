@@ -45,17 +45,21 @@ export const HeroSlider = () => {
           src={slide.src}
         />
       ))}
-      <div className="absolute right-0 bottom-0 left-0 flex justify-center gap-2 p-4">
+      <div className="absolute right-0 bottom-0 left-0 flex justify-center p-2">
         {slides.map((slide, index) => (
           <button
             aria-label={`Show slide ${index + 1}`}
-            className={`h-1.5 rounded-full transition-all ${
-              index === active ? "w-6 bg-gold" : "w-1.5 bg-background/70"
-            }`}
+            className="flex items-center justify-center p-2.5"
             key={slide.src}
             onClick={() => setActive(index)}
             type="button"
-          />
+          >
+            <span
+              className={`block h-1.5 rounded-full transition-all ${
+                index === active ? "w-6 bg-gold" : "w-1.5 bg-background/70"
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

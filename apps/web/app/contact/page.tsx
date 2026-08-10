@@ -32,10 +32,7 @@ const ContactPage = () => (
               <div>
                 <p className="font-medium">Studio & Showroom</p>
                 <p className="text-muted-foreground text-sm">
-                  {siteConfig.address.full}{" "}
-                  <span className="opacity-60">
-                    (TODO: confirm real address)
-                  </span>
+                  {siteConfig.address.full}
                 </p>
               </div>
             </div>

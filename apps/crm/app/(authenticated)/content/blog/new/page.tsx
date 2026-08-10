@@ -1,5 +1,6 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { BlogForm } from "../components/blog-form";
 
 const NewBlogPostPage = async () => {
@@ -9,14 +10,17 @@ const NewBlogPostPage = async () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">New blog post</h1>
+    <>
+      <Header page="New post" pages={["Content", "Blog"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">New blog post</h1>
+        </div>
+        <div className="max-w-3xl">
+          <BlogForm mode="create" />
+        </div>
       </div>
-      <div className="max-w-3xl">
-        <BlogForm mode="create" />
-      </div>
-    </div>
+    </>
   );
 };
 

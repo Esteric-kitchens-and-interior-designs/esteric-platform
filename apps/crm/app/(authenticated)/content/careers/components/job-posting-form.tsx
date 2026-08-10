@@ -41,12 +41,14 @@ interface JobPostingFormProps {
   initialValue?: Partial<JobPostingFormPayload>;
   mode: "create" | "edit";
   postingId?: string;
+  readOnly?: boolean;
 }
 
 export const JobPostingForm = ({
   mode,
   postingId,
   initialValue,
+  readOnly,
 }: JobPostingFormProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -200,8 +202,17 @@ export const JobPostingForm = ({
         {error ? (
           <p className="text-destructive text-sm sm:col-span-2">{error}</p>
         ) : null}
+        {readOnly ? (
+          <p className="text-muted-foreground text-sm sm:col-span-2">
+            You have view-only access — changes cannot be saved.
+          </p>
+        ) : null}
         <div className="flex gap-2 sm:col-span-2">
-          <Button disabled={isPending} onClick={handleSubmit} type="button">
+          <Button
+            disabled={isPending || readOnly}
+            onClick={handleSubmit}
+            type="button"
+          >
             {submitLabel(isPending, mode)}
           </Button>
           <Button onClick={() => router.back()} type="button" variant="ghost">

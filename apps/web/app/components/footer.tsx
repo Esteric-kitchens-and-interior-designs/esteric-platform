@@ -86,9 +86,6 @@ export const Footer = () => (
               <span className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 {siteConfig.address.full}
-                <span className="text-xs opacity-60">
-                  (TODO: confirm address)
-                </span>
               </span>
               <span className="flex items-center gap-2">
                 <PhoneIcon className="h-4 w-4 shrink-0 text-primary" />
@@ -107,7 +104,7 @@ export const Footer = () => (
               {socialLinks.map((social) => (
                 <a
                   aria-label={social.title}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-foreground/15 text-foreground/75 transition-colors hover:border-primary hover:text-primary"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground/75 transition-colors hover:border-primary hover:text-primary"
                   href={social.href}
                   key={social.title}
                   rel="noopener noreferrer"

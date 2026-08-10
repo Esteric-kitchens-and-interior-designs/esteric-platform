@@ -20,6 +20,7 @@ import {
 import { Award, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Header } from "../../components/header";
 import { formatDate } from "../lib/helpers";
 
 const CertificationsListPage = async () => {
@@ -35,77 +36,82 @@ const CertificationsListPage = async () => {
   const canWrite = hasPermission(staffUser, "content:write");
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">
-            Certifications & Awards
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Credentials shown on the public site.
-          </p>
+    <>
+      <Header page="Certifications & Awards" pages={["Content"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">
+              Certifications & Awards
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Credentials shown on the public site.
+            </p>
+          </div>
+          {canWrite ? (
+            <Button asChild>
+              <Link href="/content/certifications/new">
+                <Plus /> New entry
+              </Link>
+            </Button>
+          ) : null}
         </div>
-        {canWrite ? (
-          <Button asChild>
-            <Link href="/content/certifications/new">
-              <Plus /> New entry
-            </Link>
-          </Button>
-        ) : null}
-      </div>
 
-      {records.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Award />
-            </EmptyMedia>
-            <EmptyTitle>No certifications or awards yet</EmptyTitle>
-            <EmptyDescription>Add your first entry.</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Issuer</TableHead>
-                <TableHead>Date awarded</TableHead>
-                <TableHead>Published</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {records.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell>
-                    <Link
-                      className="font-medium hover:underline"
-                      href={`/content/certifications/${record.id}`}
-                    >
-                      {record.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{record.type}</Badge>
-                  </TableCell>
-                  <TableCell>{record.issuer ?? "-"}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(record.dateAwarded)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={record.isPublished ? "default" : "outline"}>
-                      {record.isPublished ? "Published" : "Draft"}
-                    </Badge>
-                  </TableCell>
+        {records.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Award />
+              </EmptyMedia>
+              <EmptyTitle>No certifications or awards yet</EmptyTitle>
+              <EmptyDescription>Add your first entry.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Issuer</TableHead>
+                  <TableHead>Date awarded</TableHead>
+                  <TableHead>Published</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
+              </TableHeader>
+              <TableBody>
+                {records.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>
+                      <Link
+                        className="font-medium hover:underline"
+                        href={`/content/certifications/${record.id}`}
+                      >
+                        {record.title}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{record.type}</Badge>
+                    </TableCell>
+                    <TableCell>{record.issuer ?? "-"}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(record.dateAwarded)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={record.isPublished ? "default" : "outline"}
+                      >
+                        {record.isPublished ? "Published" : "Draft"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

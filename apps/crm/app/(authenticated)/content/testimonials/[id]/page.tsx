@@ -1,6 +1,7 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
+import { Header } from "../../../components/header";
 import { TestimonialForm } from "../components/testimonial-form";
 
 interface EditTestimonialPageProps {
@@ -28,33 +29,42 @@ const EditTestimonialPage = async ({ params }: EditTestimonialPageProps) => {
     notFound();
   }
 
+  const canWrite = hasPermission(staffUser, "content:write");
+
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="font-display font-semibold text-2xl">
-          {testimonial.customerName}
-        </h1>
+    <>
+      <Header
+        page={testimonial.customerName}
+        pages={["Content", "Testimonials"]}
+      />
+      <div className="flex flex-col gap-6 p-6">
+        <div>
+          <h1 className="font-display font-semibold text-2xl">
+            {testimonial.customerName}
+          </h1>
+        </div>
+        <div className="max-w-2xl">
+          <TestimonialForm
+            initialValue={{
+              customerName: testimonial.customerName,
+              quote: testimonial.quote,
+              rating: testimonial.rating,
+              photoUrl: testimonial.photoUrl,
+              portfolioProjectId: testimonial.portfolioProjectId,
+              isFeatured: testimonial.isFeatured,
+              isPublished: testimonial.isPublished,
+            }}
+            mode="edit"
+            portfolioProjects={portfolioProjects.map((p) => ({
+              value: p.id,
+              label: p.title,
+            }))}
+            readOnly={!canWrite}
+            testimonialId={testimonial.id}
+          />
+        </div>
       </div>
-      <div className="max-w-2xl">
-        <TestimonialForm
-          initialValue={{
-            customerName: testimonial.customerName,
-            quote: testimonial.quote,
-            rating: testimonial.rating,
-            photoUrl: testimonial.photoUrl,
-            portfolioProjectId: testimonial.portfolioProjectId,
-            isFeatured: testimonial.isFeatured,
-            isPublished: testimonial.isPublished,
-          }}
-          mode="edit"
-          portfolioProjects={portfolioProjects.map((p) => ({
-            value: p.id,
-            label: p.title,
-          }))}
-          testimonialId={testimonial.id}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

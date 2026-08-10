@@ -34,17 +34,6 @@ export const projectStatusLabel: Record<ProjectStatus, string> = {
   CANCELLED: "Cancelled",
 };
 
-export const projectStatusVariant: Record<
-  ProjectStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  PLANNING: "outline",
-  IN_PROGRESS: "secondary",
-  ON_HOLD: "outline",
-  COMPLETED: "default",
-  CANCELLED: "destructive",
-};
-
 export const serviceCategoryLabel: Record<ServiceCategory, string> = {
   KITCHEN: "Kitchen",
   INTERIOR: "Interior",

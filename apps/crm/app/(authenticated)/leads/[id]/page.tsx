@@ -249,6 +249,7 @@ const LeadDetailPage = async ({ params }: LeadDetailPageProperties) => {
             </CardHeader>
             <CardContent>
               <LeadFollowUpList
+                canWrite={canWrite}
                 currentUserId={staffUser.id}
                 followUps={lead.followUps}
                 leadId={lead.id}
@@ -263,7 +264,11 @@ const LeadDetailPage = async ({ params }: LeadDetailPageProperties) => {
             <CardTitle>Notes</CardTitle>
           </CardHeader>
           <CardContent>
-            <LeadNoteThread leadId={lead.id} notes={lead.notes} />
+            <LeadNoteThread
+              canWrite={canWrite}
+              leadId={lead.id}
+              notes={lead.notes}
+            />
           </CardContent>
         </Card>
       </div>

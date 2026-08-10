@@ -108,10 +108,11 @@ export const ApplyForm = ({ jobPostingId }: ApplyFormProps) => {
       </div>
 
       <div className="grid gap-1">
-        <Label>Résumé (optional)</Label>
+        <Label htmlFor="resume">Résumé (optional)</Label>
         <input
           accept=".pdf,.doc,.docx"
           className="hidden"
+          id="resume"
           onChange={handleResumeChange}
           ref={fileInputRef}
           type="file"

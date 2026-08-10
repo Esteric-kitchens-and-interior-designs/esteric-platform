@@ -190,6 +190,21 @@
   }
 }
 
+/* Tailwind v4's `container` utility ships with no horizontal padding by
+   default (unlike v3) — every `container mx-auto` usage across the site
+   would otherwise sit flush against the viewport edge on mobile. */
+@utility container {
+  padding-inline: 1rem;
+
+  @media (width >= 640px) {
+    padding-inline: 1.5rem;
+  }
+
+  @media (width >= 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
 /* Typography plugin */
 @utility prose {
   --tw-prose-body: var(--color-foreground);

@@ -40,7 +40,9 @@ const formatBytes = (bytes: number) => {
 export const DocumentsSection = ({
   projectId,
   documents,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   projectId: string;
   documents: ProjectDocument[];
 }) => {
@@ -100,11 +102,13 @@ export const DocumentsSection = ({
             ))}
           </ul>
         )}
-        <FileUploader
-          folder="documents"
-          label={isPending ? "Saving…" : "Upload document"}
-          onUploaded={handleUploaded}
-        />
+        {canWrite ? (
+          <FileUploader
+            folder="documents"
+            label={isPending ? "Saving…" : "Upload document"}
+            onUploaded={handleUploaded}
+          />
+        ) : null}
       </CardContent>
     </Card>
   );

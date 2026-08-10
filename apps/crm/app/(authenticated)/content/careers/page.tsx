@@ -20,6 +20,7 @@ import {
 import { Briefcase, Inbox, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Header } from "../../components/header";
 import { contentStatusVariant, formatDate } from "../lib/helpers";
 import { employmentTypeLabel } from "./components/job-posting-form";
 
@@ -37,84 +38,87 @@ const CareersListPage = async () => {
   const canWrite = hasPermission(staffUser, "content:write");
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">Careers</h1>
-          <p className="text-muted-foreground text-sm">
-            Job postings published on the public site.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline">
-            <Link href="/content/careers/applications">
-              <Inbox /> Applications
-            </Link>
-          </Button>
-          {canWrite ? (
-            <Button asChild>
-              <Link href="/content/careers/new">
-                <Plus /> New posting
+    <>
+      <Header page="Careers" pages={["Content"]} />
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">Careers</h1>
+            <p className="text-muted-foreground text-sm">
+              Job postings published on the public site.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline">
+              <Link href="/content/careers/applications">
+                <Inbox /> Applications
               </Link>
             </Button>
-          ) : null}
+            {canWrite ? (
+              <Button asChild>
+                <Link href="/content/careers/new">
+                  <Plus /> New posting
+                </Link>
+              </Button>
+            ) : null}
+          </div>
         </div>
-      </div>
 
-      {postings.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Briefcase />
-            </EmptyMedia>
-            <EmptyTitle>No job postings yet</EmptyTitle>
-            <EmptyDescription>Create your first opening.</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Applications</TableHead>
-                <TableHead>Posted</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {postings.map((posting) => (
-                <TableRow key={posting.id}>
-                  <TableCell>
-                    <Link
-                      className="font-medium hover:underline"
-                      href={`/content/careers/${posting.id}`}
-                    >
-                      {posting.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{posting.department ?? "-"}</TableCell>
-                  <TableCell>
-                    {employmentTypeLabel[posting.employmentType]}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={contentStatusVariant[posting.status]}>
-                      {posting.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{posting._count.applications}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(posting.postedAt)}
-                  </TableCell>
+        {postings.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Briefcase />
+              </EmptyMedia>
+              <EmptyTitle>No job postings yet</EmptyTitle>
+              <EmptyDescription>Create your first opening.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Applications</TableHead>
+                  <TableHead>Posted</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
+              </TableHeader>
+              <TableBody>
+                {postings.map((posting) => (
+                  <TableRow key={posting.id}>
+                    <TableCell>
+                      <Link
+                        className="font-medium hover:underline"
+                        href={`/content/careers/${posting.id}`}
+                      >
+                        {posting.title}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{posting.department ?? "-"}</TableCell>
+                    <TableCell>
+                      {employmentTypeLabel[posting.employmentType]}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={contentStatusVariant[posting.status]}>
+                        {posting.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{posting._count.applications}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(posting.postedAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

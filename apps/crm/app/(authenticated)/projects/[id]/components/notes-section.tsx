@@ -24,7 +24,9 @@ interface Note {
 export const NotesSection = ({
   projectId,
   notes,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   projectId: string;
   notes: Note[];
 }) => {
@@ -54,22 +56,24 @@ export const NotesSection = ({
         <CardTitle>Internal notes</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Textarea
-            onChange={(event) => setBody(event.target.value)}
-            placeholder="Add an internal note (not visible to the customer)…"
-            rows={3}
-            value={body}
-          />
-          <Button
-            disabled={isPending}
-            onClick={handleAdd}
-            size="sm"
-            type="button"
-          >
-            Add note
-          </Button>
-        </div>
+        {canWrite ? (
+          <div className="space-y-2">
+            <Textarea
+              onChange={(event) => setBody(event.target.value)}
+              placeholder="Add an internal note (not visible to the customer)…"
+              rows={3}
+              value={body}
+            />
+            <Button
+              disabled={isPending}
+              onClick={handleAdd}
+              size="sm"
+              type="button"
+            >
+              Add note
+            </Button>
+          </div>
+        ) : null}
         {notes.length === 0 ? (
           <p className="text-muted-foreground text-sm">No notes yet.</p>
         ) : (

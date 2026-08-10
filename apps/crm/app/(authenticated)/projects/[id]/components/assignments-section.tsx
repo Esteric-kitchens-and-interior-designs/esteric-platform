@@ -30,6 +30,7 @@ interface Assignment {
 
 interface AssignmentsSectionProps {
   assignments: Assignment[];
+  canWrite?: boolean;
   projectId: string;
   staffOptions: ComboboxOption[];
 }
@@ -38,6 +39,7 @@ export const AssignmentsSection = ({
   projectId,
   assignments,
   staffOptions,
+  canWrite = true,
 }: AssignmentsSectionProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -107,43 +109,47 @@ export const AssignmentsSection = ({
                     {assignment.roleOnProject}
                   </span>
                 </div>
-                <Button
-                  disabled={isPending}
-                  onClick={() => handleRemove(assignment.id)}
-                  size="icon-sm"
-                  type="button"
-                  variant="ghost"
-                >
-                  <Trash2 className="size-4 text-destructive" />
-                </Button>
+                {canWrite ? (
+                  <Button
+                    disabled={isPending}
+                    onClick={() => handleRemove(assignment.id)}
+                    size="icon-sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
+                ) : null}
               </li>
             ))}
           </ul>
         )}
-        <div className="space-y-2 border-t pt-3">
-          <Combobox
-            emptyText="No staff found."
-            onChange={setUserId}
-            options={staffOptions}
-            placeholder="Select staff member"
-            value={userId}
-          />
-          <Input
-            onChange={(event) => setRoleOnProject(event.target.value)}
-            placeholder="Role on project (e.g. Lead Designer)"
-            value={roleOnProject}
-          />
-          <Button
-            className="w-full"
-            disabled={isPending}
-            onClick={handleAdd}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            Add to team
-          </Button>
-        </div>
+        {canWrite ? (
+          <div className="space-y-2 border-t pt-3">
+            <Combobox
+              emptyText="No staff found."
+              onChange={setUserId}
+              options={staffOptions}
+              placeholder="Select staff member"
+              value={userId}
+            />
+            <Input
+              onChange={(event) => setRoleOnProject(event.target.value)}
+              placeholder="Role on project (e.g. Lead Designer)"
+              value={roleOnProject}
+            />
+            <Button
+              className="w-full"
+              disabled={isPending}
+              onClick={handleAdd}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              Add to team
+            </Button>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

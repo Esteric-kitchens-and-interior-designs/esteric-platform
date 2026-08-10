@@ -21,7 +21,9 @@ interface Note {
 export const CustomerNoteThread = ({
   customerId,
   notes,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   customerId: string;
   notes: Note[];
 }) => {
@@ -43,23 +45,29 @@ export const CustomerNoteThread = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <form action={handleSubmit} className="flex flex-col gap-2" ref={formRef}>
-        <Textarea
-          name="body"
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Add a note…"
-          rows={2}
-          value={value}
-        />
-        <Button
-          className="self-end"
-          disabled={isPending || value.trim().length === 0}
-          size="sm"
-          type="submit"
+      {canWrite ? (
+        <form
+          action={handleSubmit}
+          className="flex flex-col gap-2"
+          ref={formRef}
         >
-          {isPending ? "Adding…" : "Add note"}
-        </Button>
-      </form>
+          <Textarea
+            name="body"
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Add a note…"
+            rows={2}
+            value={value}
+          />
+          <Button
+            className="self-end"
+            disabled={isPending || value.trim().length === 0}
+            size="sm"
+            type="submit"
+          >
+            {isPending ? "Adding…" : "Add note"}
+          </Button>
+        </form>
+      ) : null}
 
       {notes.length === 0 ? (
         <p className="text-muted-foreground text-sm">No notes yet.</p>

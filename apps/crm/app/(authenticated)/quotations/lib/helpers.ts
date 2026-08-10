@@ -33,19 +33,6 @@ export const quotationStatusLabel: Record<QuotationStatus, string> = {
   REVISED: "Revised",
 };
 
-export const quotationStatusVariant: Record<
-  QuotationStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  DRAFT: "outline",
-  SENT: "secondary",
-  VIEWED: "secondary",
-  APPROVED: "default",
-  REJECTED: "destructive",
-  EXPIRED: "destructive",
-  REVISED: "outline",
-};
-
 export interface QuotationItemInput {
   description: string;
   quantity: number;

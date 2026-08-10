@@ -32,7 +32,9 @@ interface CommunicationEntry {
 export const CommunicationLog = ({
   customerId,
   communications,
+  canWrite = true,
 }: {
+  canWrite?: boolean;
   customerId: string;
   communications: CommunicationEntry[];
 }) => {
@@ -56,7 +58,7 @@ export const CommunicationLog = ({
 
   return (
     <div className="flex flex-col gap-4">
-      {showForm ? (
+      {canWrite && showForm ? (
         <form
           action={handleSubmit}
           className="flex flex-col gap-2 rounded-md border p-3"
@@ -107,7 +109,8 @@ export const CommunicationLog = ({
             </Button>
           </div>
         </form>
-      ) : (
+      ) : null}
+      {canWrite && !showForm ? (
         <Button
           className="self-start"
           onClick={() => setShowForm(true)}
@@ -116,7 +119,7 @@ export const CommunicationLog = ({
         >
           <PlusIcon /> Log communication
         </Button>
-      )}
+      ) : null}
 
       {communications.length === 0 ? (
         <p className="text-muted-foreground text-sm">
