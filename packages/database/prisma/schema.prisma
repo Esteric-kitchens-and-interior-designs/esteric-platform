@@ -566,6 +566,57 @@ model FAQ {
   createdAt   DateTime @default(now())
 }
 
+model JobPosting {
+  id             String         @id @default(cuid())
+  title          String
+  slug           String         @unique
+  department     String?
+  location       String?
+  employmentType EmploymentType @default(FULL_TIME)
+  description    String
+  requirements   String?
+  status         ContentStatus  @default(DRAFT)
+  postedAt       DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  applications JobApplication[]
+
+  @@index([status])
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+model JobApplication {
+  id           String               @id @default(cuid())
+  jobPostingId String
+  jobPosting   JobPosting           @relation(fields: [jobPostingId], references: [id])
+  name         String
+  email        String
+  phone        String?
+  coverMessage String?
+  resumeUrl    String?
+  status       JobApplicationStatus @default(NEW)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([jobPostingId])
+  @@index([status])
+}
+
+enum JobApplicationStatus {
+  NEW
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+  HIRED
+}
+
 model NewsletterSubscriber {
   id             String           @id @default(cuid())
   email          String           @unique

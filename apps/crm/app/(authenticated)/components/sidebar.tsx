@@ -20,6 +20,7 @@ import {
 } from "@repo/design-system/components/ui/sidebar";
 import {
   Award,
+  Briefcase,
   ClipboardList,
   FileText,
   Gauge,
@@ -111,6 +112,12 @@ const navContent: NavItem[] = [
     title: "Newsletter",
     url: "/content/newsletter",
     icon: Mail,
+    permission: "content:read",
+  },
+  {
+    title: "Careers",
+    url: "/content/careers",
+    icon: Briefcase,
     permission: "content:read",
   },
 ];

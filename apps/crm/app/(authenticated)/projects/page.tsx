@@ -32,6 +32,7 @@ import {
 import { ClipboardList, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ExportCsvButton } from "../components/export-csv-button";
 import {
   formatDate,
   projectStatusLabel,
@@ -76,13 +77,40 @@ const ProjectsPage = async ({ searchParams }: ProjectsPageProps) => {
             Track active work from kickoff to completion.
           </p>
         </div>
-        {canWrite ? (
-          <Button asChild>
-            <Link href="/projects/new">
-              <Plus /> New project
-            </Link>
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <ExportCsvButton
+            filename="projects"
+            headers={[
+              "Project #",
+              "Customer",
+              "Title",
+              "Category",
+              "Status",
+              "Completion %",
+              "Budget",
+              "Deadline",
+              "Created",
+            ]}
+            rows={projects.map((project) => [
+              project.projectNumber,
+              project.customer.name,
+              project.title,
+              serviceCategoryLabel[project.category],
+              projectStatusLabel[project.status],
+              project.completionPercentage,
+              project.budget?.toString() ?? "",
+              project.deadline ? project.deadline.toISOString() : "",
+              project.createdAt.toISOString(),
+            ])}
+          />
+          {canWrite ? (
+            <Button asChild>
+              <Link href="/projects/new">
+                <Plus /> New project
+              </Link>
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <form className="flex flex-wrap items-center gap-3" method="get">

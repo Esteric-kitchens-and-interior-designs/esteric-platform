@@ -1,6 +1,7 @@
 "use client";
 
 import type { ServiceCategory } from "@repo/database/generated/enums";
+import { AddToCalendar } from "@repo/design-system/components/add-to-calendar";
 import { Button } from "@repo/design-system/components/ui/button";
 import { Calendar } from "@repo/design-system/components/ui/calendar";
 import { Input } from "@repo/design-system/components/ui/input";
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@repo/design-system/components/ui/select";
 import { Textarea } from "@repo/design-system/components/ui/textarea";
+import { parseTimeSlotOnDate } from "@repo/design-system/lib/calendar";
 import { cn } from "@repo/design-system/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, CheckCircle2, Loader2, MoveRight } from "lucide-react";
@@ -25,7 +27,7 @@ import { useActionState, useState } from "react";
 import { submitAppointmentRequest } from "@/app/appointment/actions";
 import { initialFormState } from "@/lib/form-state";
 import { serviceCategoryLabels, services } from "@/lib/services";
-import { appointmentSlots } from "@/lib/site-config";
+import { appointmentSlots, siteConfig } from "@/lib/site-config";
 
 interface AppointmentFormProps {
   readonly defaultService?: ServiceCategory;
@@ -41,6 +43,8 @@ export const AppointmentForm = ({ defaultService }: AppointmentFormProps) => {
   const [date, setDate] = useState<Date | undefined>();
 
   if (state.success) {
+    const range = date && slot ? parseTimeSlotOnDate(date, slot) : null;
+
     return (
       <div className="flex flex-col items-center gap-3 rounded-md border bg-card p-10 text-center">
         <CheckCircle2 className="h-10 w-10 text-primary" strokeWidth={1.5} />
@@ -50,6 +54,15 @@ export const AppointmentForm = ({ defaultService }: AppointmentFormProps) => {
         <p className="max-w-sm text-muted-foreground text-sm">
           Thank you — we'll confirm your appointment by email or phone shortly.
         </p>
+        {range ? (
+          <AddToCalendar
+            description="Consultation with Esteric Kitchens & Interior Designs. This slot is pending confirmation."
+            end={range.end}
+            location={siteConfig.address.full}
+            start={range.start}
+            title="Esteric Kitchens & Interior Designs — Consultation"
+          />
+        ) : null}
       </div>
     );
   }

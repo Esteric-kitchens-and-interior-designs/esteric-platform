@@ -19,6 +19,7 @@ import {
 import { SearchIcon, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ExportCsvButton } from "../components/export-csv-button";
 import { Header } from "../components/header";
 import { formatDate } from "../lib/format";
 import { CustomerFormSheet } from "./components/customer-form-sheet";
@@ -87,7 +88,38 @@ const CustomersPage = async ({ searchParams }: CustomersPageProperties) => {
               placeholder="Search by name or email…"
             />
           </form>
-          {canWrite && <CustomerFormSheet />}
+          <div className="flex items-center gap-2">
+            <ExportCsvButton
+              filename="customers"
+              headers={[
+                "Name",
+                "Email",
+                "Phone",
+                "Company",
+                "Address",
+                "City",
+                "Region",
+                "Country",
+                "Projects",
+                "Created",
+              ]}
+              rows={customers.map((customer) => [
+                customer.name,
+                customer.email,
+                customer.phone ?? "",
+                customer.company ?? "",
+                [customer.addressLine1, customer.addressLine2]
+                  .filter(Boolean)
+                  .join(", "),
+                customer.city ?? "",
+                customer.region ?? "",
+                customer.country ?? "",
+                customer._count.projects,
+                customer.createdAt.toISOString(),
+              ])}
+            />
+            {canWrite && <CustomerFormSheet />}
+          </div>
         </div>
 
         {customers.length === 0 ? (

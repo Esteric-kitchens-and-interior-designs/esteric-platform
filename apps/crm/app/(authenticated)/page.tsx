@@ -1,5 +1,6 @@
 import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
+import { AddToCalendar } from "@repo/design-system/components/add-to-calendar";
 import { Badge } from "@repo/design-system/components/ui/badge";
 import {
   Card,
@@ -15,6 +16,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@repo/design-system/components/ui/empty";
+import { parseTimeSlotOnDate } from "@repo/design-system/lib/calendar";
 import {
   AlertTriangle,
   Calendar,
@@ -289,29 +291,51 @@ const DashboardPage = async () => {
                 </Empty>
               ) : (
                 <ul className="flex flex-col gap-3">
-                  {upcomingAppointments.map((booking) => (
-                    <li
-                      className="flex items-center justify-between gap-2 text-sm"
-                      key={booking.id}
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium">{booking.name}</p>
-                        <p className="truncate text-muted-foreground text-xs">
-                          {formatDate(booking.requestedDate)}
-                          {booking.requestedSlot
-                            ? ` · ${booking.requestedSlot}`
-                            : ""}
-                        </p>
-                      </div>
-                      <Badge
-                        variant={
-                          booking.status === "CONFIRMED" ? "default" : "outline"
-                        }
+                  {upcomingAppointments.map((booking) => {
+                    const range = booking.requestedSlot
+                      ? parseTimeSlotOnDate(
+                          booking.requestedDate,
+                          booking.requestedSlot
+                        )
+                      : null;
+
+                    return (
+                      <li
+                        className="flex items-center justify-between gap-2 text-sm"
+                        key={booking.id}
                       >
-                        {booking.status}
-                      </Badge>
-                    </li>
-                  ))}
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{booking.name}</p>
+                          <p className="truncate text-muted-foreground text-xs">
+                            {formatDate(booking.requestedDate)}
+                            {booking.requestedSlot
+                              ? ` · ${booking.requestedSlot}`
+                              : ""}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {range ? (
+                            <AddToCalendar
+                              description={`Appointment with ${booking.name} (${booking.email}).`}
+                              end={range.end}
+                              iconOnly
+                              start={range.start}
+                              title={`Esteric — Appointment with ${booking.name}`}
+                            />
+                          ) : null}
+                          <Badge
+                            variant={
+                              booking.status === "CONFIRMED"
+                                ? "default"
+                                : "outline"
+                            }
+                          >
+                            {booking.status}
+                          </Badge>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </CardContent>

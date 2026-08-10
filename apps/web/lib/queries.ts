@@ -75,3 +75,14 @@ export const getAllFaqs = () =>
     where: { isPublished: true },
     orderBy: { sortOrder: "asc" },
   });
+
+export const getPublishedJobPostings = () =>
+  database.jobPosting.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { postedAt: "desc" },
+  });
+
+export const getJobPostingBySlug = (slug: string) =>
+  database.jobPosting.findFirst({
+    where: { slug, status: "PUBLISHED" },
+  });

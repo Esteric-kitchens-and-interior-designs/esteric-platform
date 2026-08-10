@@ -27,6 +27,7 @@ import {
 import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ExportCsvButton } from "../components/export-csv-button";
 import { QuotationStatusBadge } from "./components/status-badge";
 import { formatDate, formatMoney, quotationStatusLabel } from "./lib/helpers";
 
@@ -70,13 +71,38 @@ const QuotationsPage = async ({ searchParams }: QuotationsPageProps) => {
             Draft, send, and track customer quotations.
           </p>
         </div>
-        {canWrite ? (
-          <Button asChild>
-            <Link href="/quotations/new">
-              <Plus /> New quotation
-            </Link>
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <ExportCsvButton
+            filename="quotations"
+            headers={[
+              "Quote #",
+              "Version",
+              "Customer",
+              "Title",
+              "Status",
+              "Total",
+              "Currency",
+              "Created",
+            ]}
+            rows={quotations.map((quotation) => [
+              quotation.quoteNumber,
+              quotation.version,
+              quotation.customer.name,
+              quotation.title,
+              quotationStatusLabel[quotation.status],
+              quotation.total.toString(),
+              quotation.currency,
+              quotation.createdAt.toISOString(),
+            ])}
+          />
+          {canWrite ? (
+            <Button asChild>
+              <Link href="/quotations/new">
+                <Plus /> New quotation
+              </Link>
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <form className="flex flex-wrap items-center gap-3" method="get">

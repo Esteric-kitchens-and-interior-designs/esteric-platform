@@ -40,6 +40,7 @@ const navigationItems: NavItem[] = [
   { title: "Testimonials", href: "/#testimonials" },
   { title: "Certifications", href: "/#certifications" },
   { title: "FAQs", href: "/#faqs" },
+  { title: "Careers", href: "/careers" },
   { title: "Contact", href: "/contact" },
 ];
 

@@ -76,3 +76,24 @@ export const newsletterSchema = z.object({
 });
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>;
+
+export const jobApplicationSchema = z.object({
+  name,
+  email,
+  phone,
+  jobPostingId: z.string().trim().min(1),
+  coverMessage: z
+    .string()
+    .trim()
+    .max(4000)
+    .optional()
+    .transform((value) => (value ? value : undefined)),
+  resumeUrl: z
+    .string()
+    .trim()
+    .url()
+    .optional()
+    .transform((value) => (value ? value : undefined)),
+});
+
+export type JobApplicationInput = z.infer<typeof jobApplicationSchema>;

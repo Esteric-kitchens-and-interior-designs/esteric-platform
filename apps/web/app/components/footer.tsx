@@ -31,6 +31,7 @@ const footerColumns = [
       { title: "Certifications & Awards", href: "/#certifications" },
       { title: "Blog", href: "/blog" },
       { title: "FAQs", href: "/#faqs" },
+      { title: "Careers", href: "/careers" },
     ],
   },
   {

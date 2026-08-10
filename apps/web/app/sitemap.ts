@@ -16,6 +16,7 @@ const staticRoutes = [
   "/wardrobes-cabinets",
   "/portfolio",
   "/blog",
+  "/careers",
   "/contact",
   "/quote",
   "/appointment",
@@ -26,12 +27,16 @@ const staticRoutes = [
 ];
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const [portfolioProjects, blogPosts] = await Promise.all([
+  const [portfolioProjects, blogPosts, jobPostings] = await Promise.all([
     database.portfolioProject.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
     database.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    }),
+    database.jobPosting.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
@@ -49,6 +54,10 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     ...blogPosts.map((post) => ({
       url: new URL(`/blog/${post.slug}`, url).href,
       lastModified: post.updatedAt,
+    })),
+    ...jobPostings.map((posting) => ({
+      url: new URL(`/careers/${posting.slug}`, url).href,
+      lastModified: posting.updatedAt,
     })),
   ];
 };

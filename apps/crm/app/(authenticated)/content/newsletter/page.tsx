@@ -28,8 +28,8 @@ import {
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ExportCsvButton } from "../../components/export-csv-button";
 import { formatDate } from "../lib/helpers";
-import { ExportCsvButton } from "./components/export-button";
 
 interface NewsletterPageProps {
   searchParams: Promise<{ status?: string; q?: string }>;
@@ -63,13 +63,15 @@ const NewsletterPage = async ({ searchParams }: NewsletterPageProps) => {
           </p>
         </div>
         <ExportCsvButton
-          rows={subscribers.map((s) => ({
-            email: s.email,
-            name: s.name,
-            status: s.status,
-            source: s.source,
-            subscribedAt: s.subscribedAt.toISOString(),
-          }))}
+          filename="newsletter-subscribers"
+          headers={["Email", "Name", "Status", "Source", "Subscribed at"]}
+          rows={subscribers.map((s) => [
+            s.email,
+            s.name ?? "",
+            s.status,
+            s.source ?? "",
+            s.subscribedAt.toISOString(),
+          ])}
         />
       </div>
 

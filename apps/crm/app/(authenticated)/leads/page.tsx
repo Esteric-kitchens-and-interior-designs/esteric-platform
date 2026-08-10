@@ -20,6 +20,7 @@ import {
 import { Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ExportCsvButton } from "../components/export-csv-button";
 import { Header } from "../components/header";
 import { leadStatusTone, priorityTone, toneClass } from "../lib/badges";
 import { formatDate } from "../lib/format";
@@ -95,7 +96,38 @@ const LeadsPage = async ({ searchParams }: LeadsPageProperties) => {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <LeadFilters />
-          {canWrite && <LeadFormSheet staff={staff} />}
+          <div className="flex items-center gap-2">
+            <ExportCsvButton
+              filename="leads"
+              headers={[
+                "Name",
+                "Email",
+                "Phone",
+                "Source",
+                "Status",
+                "Priority",
+                "Service category",
+                "Budget range",
+                "Assigned to",
+                "Created",
+              ]}
+              rows={leads.map((lead) => [
+                lead.name,
+                lead.email,
+                lead.phone ?? "",
+                lead.source,
+                lead.status,
+                lead.priority,
+                lead.serviceCategory ?? "",
+                lead.budgetRange ?? "",
+                lead.assignedTo
+                  ? `${lead.assignedTo.firstName} ${lead.assignedTo.lastName}`
+                  : "",
+                lead.createdAt.toISOString(),
+              ])}
+            />
+            {canWrite && <LeadFormSheet staff={staff} />}
+          </div>
         </div>
 
         {leads.length === 0 ? (
