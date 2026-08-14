@@ -119,6 +119,32 @@ export const updateJobPosting = async (
   revalidatePath(`/content/careers/${id}`);
 };
 
+export const deleteJobPosting = async (id: string) => {
+  await requirePermission("content:write");
+
+  const [existing, applicationCount] = await Promise.all([
+    database.jobPosting.findUniqueOrThrow({ where: { id } }),
+    database.jobApplication.count({ where: { jobPostingId: id } }),
+  ]);
+
+  if (applicationCount > 0) {
+    throw new Error(
+      `Can't delete — ${applicationCount} application${applicationCount === 1 ? "" : "s"} reference this posting. Unpublish it instead to remove it from the site.`
+    );
+  }
+
+  await database.jobPosting.delete({ where: { id } });
+
+  await logActivity({
+    action: "job_posting.deleted",
+    entityType: "JobPosting",
+    entityId: id,
+    description: `Deleted job posting "${existing.title}"`,
+  });
+
+  revalidatePath("/content/careers");
+};
+
 export const updateJobApplicationStatus = async (
   id: string,
   status: JobApplicationStatus

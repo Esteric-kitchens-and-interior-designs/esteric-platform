@@ -112,3 +112,22 @@ export const updateBlogPost = async (id: string, payload: BlogFormPayload) => {
   revalidatePath("/content/blog");
   revalidatePath(`/content/blog/${id}`);
 };
+
+export const deleteBlogPost = async (id: string) => {
+  await requirePermission("content:write");
+
+  const existing = await database.blogPost.findUniqueOrThrow({
+    where: { id },
+  });
+
+  await database.blogPost.delete({ where: { id } });
+
+  await logActivity({
+    action: "blog.deleted",
+    entityType: "BlogPost",
+    entityId: id,
+    description: `Deleted blog post "${existing.title}"`,
+  });
+
+  revalidatePath("/content/blog");
+};

@@ -2,6 +2,8 @@ import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "../../../components/header";
+import { ContentDeleteButton } from "../../components/content-delete-button";
+import { deleteCertification } from "../actions";
 import { CertificationForm } from "../components/certification-form";
 
 interface EditCertificationPageProps {
@@ -35,10 +37,18 @@ const EditCertificationPage = async ({
         pages={["Content", "Certifications & Awards"]}
       />
       <div className="flex flex-col gap-6 p-6">
-        <div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="font-display font-semibold text-2xl">
             {record.title}
           </h1>
+          {canWrite ? (
+            <ContentDeleteButton
+              deleteAction={deleteCertification}
+              entityLabel="certification/award"
+              id={record.id}
+              redirectTo="/content/certifications"
+            />
+          ) : null}
         </div>
         <div className="max-w-2xl">
           <CertificationForm

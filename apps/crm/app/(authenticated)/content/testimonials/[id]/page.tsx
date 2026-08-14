@@ -2,6 +2,8 @@ import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "../../../components/header";
+import { ContentDeleteButton } from "../../components/content-delete-button";
+import { deleteTestimonial } from "../actions";
 import { TestimonialForm } from "../components/testimonial-form";
 
 interface EditTestimonialPageProps {
@@ -38,10 +40,18 @@ const EditTestimonialPage = async ({ params }: EditTestimonialPageProps) => {
         pages={["Content", "Testimonials"]}
       />
       <div className="flex flex-col gap-6 p-6">
-        <div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="font-display font-semibold text-2xl">
             {testimonial.customerName}
           </h1>
+          {canWrite ? (
+            <ContentDeleteButton
+              deleteAction={deleteTestimonial}
+              entityLabel="testimonial"
+              id={testimonial.id}
+              redirectTo="/content/testimonials"
+            />
+          ) : null}
         </div>
         <div className="max-w-2xl">
           <TestimonialForm

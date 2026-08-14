@@ -86,3 +86,22 @@ export const updateTestimonial = async (
   revalidatePath("/content/testimonials");
   revalidatePath(`/content/testimonials/${id}`);
 };
+
+export const deleteTestimonial = async (id: string) => {
+  await requirePermission("content:write");
+
+  const existing = await database.testimonial.findUniqueOrThrow({
+    where: { id },
+  });
+
+  await database.testimonial.delete({ where: { id } });
+
+  await logActivity({
+    action: "testimonial.deleted",
+    entityType: "Testimonial",
+    entityId: id,
+    description: `Deleted testimonial from ${existing.customerName}`,
+  });
+
+  revalidatePath("/content/testimonials");
+};

@@ -2,6 +2,8 @@ import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "../../../components/header";
+import { ContentDeleteButton } from "../../components/content-delete-button";
+import { deleteJobPosting } from "../actions";
 import { JobPostingForm } from "../components/job-posting-form";
 
 interface EditJobPostingPageProps {
@@ -28,13 +30,23 @@ const EditJobPostingPage = async ({ params }: EditJobPostingPageProps) => {
     <>
       <Header page={posting.title} pages={["Content", "Careers"]} />
       <div className="flex flex-col gap-6 p-6">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">
-            {posting.title}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            /careers/{posting.slug}
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">
+              {posting.title}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              /careers/{posting.slug}
+            </p>
+          </div>
+          {canWrite ? (
+            <ContentDeleteButton
+              deleteAction={deleteJobPosting}
+              entityLabel="job posting"
+              id={posting.id}
+              redirectTo="/content/careers"
+            />
+          ) : null}
         </div>
         <div className="max-w-3xl">
           <JobPostingForm

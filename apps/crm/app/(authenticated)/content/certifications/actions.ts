@@ -82,3 +82,22 @@ export const updateCertification = async (
   revalidatePath("/content/certifications");
   revalidatePath(`/content/certifications/${id}`);
 };
+
+export const deleteCertification = async (id: string) => {
+  await requirePermission("content:write");
+
+  const existing = await database.certificationAward.findUniqueOrThrow({
+    where: { id },
+  });
+
+  await database.certificationAward.delete({ where: { id } });
+
+  await logActivity({
+    action: "certification.deleted",
+    entityType: "CertificationAward",
+    entityId: id,
+    description: `Deleted "${existing.title}"`,
+  });
+
+  revalidatePath("/content/certifications");
+};

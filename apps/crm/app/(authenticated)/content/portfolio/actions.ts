@@ -213,5 +213,34 @@ export const updatePortfolioImage = async (
     },
   });
 
+  await logActivity({
+    action: "portfolio.image_updated",
+    entityType: "PortfolioProject",
+    entityId: portfolioProjectId,
+    description: "Updated a portfolio image's caption/alt text",
+  });
+
   revalidatePath(`/content/portfolio/${portfolioProjectId}`);
+};
+
+export const deletePortfolioProject = async (id: string) => {
+  await requirePermission("content:write");
+
+  const existing = await database.portfolioProject.findUniqueOrThrow({
+    where: { id },
+  });
+
+  await database.$transaction([
+    database.portfolioImage.deleteMany({ where: { portfolioProjectId: id } }),
+    database.portfolioProject.delete({ where: { id } }),
+  ]);
+
+  await logActivity({
+    action: "portfolio.deleted",
+    entityType: "PortfolioProject",
+    entityId: id,
+    description: `Deleted portfolio project "${existing.title}"`,
+  });
+
+  revalidatePath("/content/portfolio");
 };

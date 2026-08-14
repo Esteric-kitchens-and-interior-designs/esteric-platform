@@ -2,6 +2,8 @@ import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "../../../components/header";
+import { ContentDeleteButton } from "../../components/content-delete-button";
+import { deletePortfolioProject } from "../actions";
 import { ImageManager } from "../components/image-manager";
 import { PortfolioForm } from "../components/portfolio-form";
 
@@ -48,13 +50,23 @@ const EditPortfolioProjectPage = async ({
     <>
       <Header page={portfolioProject.title} pages={["Content", "Portfolio"]} />
       <div className="flex flex-col gap-6 p-6">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">
-            {portfolioProject.title}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            /portfolio/{portfolioProject.slug}
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">
+              {portfolioProject.title}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              /portfolio/{portfolioProject.slug}
+            </p>
+          </div>
+          {canWrite ? (
+            <ContentDeleteButton
+              deleteAction={deletePortfolioProject}
+              entityLabel="portfolio project"
+              id={portfolioProject.id}
+              redirectTo="/content/portfolio"
+            />
+          ) : null}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
           <PortfolioForm

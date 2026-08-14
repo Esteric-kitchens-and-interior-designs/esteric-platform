@@ -2,6 +2,8 @@ import { getCurrentStaffUser, hasPermission } from "@repo/auth/rbac";
 import { database } from "@repo/database";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "../../../components/header";
+import { ContentDeleteButton } from "../../components/content-delete-button";
+import { deleteBlogPost } from "../actions";
 import { BlogForm } from "../components/blog-form";
 
 interface EditBlogPostPageProps {
@@ -28,9 +30,21 @@ const EditBlogPostPage = async ({ params }: EditBlogPostPageProps) => {
     <>
       <Header page={post.title} pages={["Content", "Blog"]} />
       <div className="flex flex-col gap-6 p-6">
-        <div>
-          <h1 className="font-display font-semibold text-2xl">{post.title}</h1>
-          <p className="text-muted-foreground text-sm">/blog/{post.slug}</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display font-semibold text-2xl">
+              {post.title}
+            </h1>
+            <p className="text-muted-foreground text-sm">/blog/{post.slug}</p>
+          </div>
+          {canWrite ? (
+            <ContentDeleteButton
+              deleteAction={deleteBlogPost}
+              entityLabel="blog post"
+              id={post.id}
+              redirectTo="/content/blog"
+            />
+          ) : null}
         </div>
         <div className="max-w-3xl">
           <BlogForm
