@@ -83,6 +83,7 @@ const EditPortfolioProjectPage = async ({
             readOnly={!canWrite}
           />
           <ImageManager
+            canWrite={canWrite}
             images={portfolioProject.images}
             portfolioProjectId={portfolioProject.id}
           />

@@ -193,3 +193,25 @@ export const removePortfolioImage = async (
 
   revalidatePath(`/content/portfolio/${portfolioProjectId}`);
 };
+
+export const updatePortfolioImage = async (
+  portfolioProjectId: string,
+  imageId: string,
+  payload: { altText?: string; caption?: string }
+) => {
+  await requirePermission("content:write");
+
+  await database.portfolioImage.update({
+    where: { id: imageId },
+    data: {
+      ...(payload.caption !== undefined
+        ? { caption: payload.caption || null }
+        : {}),
+      ...(payload.altText !== undefined
+        ? { altText: payload.altText || null }
+        : {}),
+    },
+  });
+
+  revalidatePath(`/content/portfolio/${portfolioProjectId}`);
+};

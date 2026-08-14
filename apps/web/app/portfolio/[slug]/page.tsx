@@ -40,43 +40,53 @@ export const generateMetadata = async ({
   });
 };
 
+const BEFORE_AFTER_BADGE_CLASSES = {
+  before: "bg-charcoal/85 text-secondary-foreground",
+  after: "bg-gold text-gold-foreground",
+} as const;
+
 const BeforeAfterColumn = ({
   images,
   label,
+  tone,
 }: {
   images: PortfolioImage[];
   label: string;
+  tone: keyof typeof BEFORE_AFTER_BADGE_CLASSES;
 }) => {
   if (images.length === 0) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-muted-foreground text-xs uppercase tracking-widest">
-        {label}
-      </span>
-      <div
-        className={cn(
-          "grid gap-2",
-          images.length > 1 ? "grid-cols-2" : "grid-cols-1"
-        )}
-      >
-        {images.map((image) => (
-          <div
-            className="relative aspect-square w-full overflow-hidden rounded-md"
-            key={image.id}
+    <div
+      className={cn(
+        "grid gap-3",
+        images.length > 1 ? "grid-cols-2" : "grid-cols-1"
+      )}
+    >
+      {images.map((image) => (
+        <div
+          className="relative aspect-square w-full overflow-hidden rounded-xl shadow-sm"
+          key={image.id}
+        >
+          <Image
+            alt={image.altText ?? image.caption ?? label}
+            className="object-cover"
+            fill
+            sizes="(min-width: 1024px) 25vw, 50vw"
+            src={image.url}
+          />
+          <span
+            className={cn(
+              "absolute top-3 left-3 rounded-full px-3 py-1 font-display text-xs uppercase tracking-widest backdrop-blur-sm",
+              BEFORE_AFTER_BADGE_CLASSES[tone]
+            )}
           >
-            <Image
-              alt={image.altText ?? image.caption ?? label}
-              className="object-cover"
-              fill
-              sizes="(min-width: 1024px) 25vw, 50vw"
-              src={image.url}
-            />
-          </div>
-        ))}
-      </div>
+            {label}
+          </span>
+        </div>
+      ))}
     </div>
   );
 };
@@ -161,13 +171,18 @@ const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
         </div>
 
         {before.length > 0 || after.length > 0 ? (
-          <div className="flex flex-col gap-6">
-            <h2 className="font-display text-2xl tracking-tight md:text-3xl">
-              Before & After
-            </h2>
+          <div className="flex flex-col gap-8 rounded-2xl border bg-muted/30 p-6 sm:p-10">
+            <div className="flex flex-col gap-2 text-center">
+              <span className="text-primary text-xs uppercase tracking-[0.3em]">
+                The Transformation
+              </span>
+              <h2 className="font-display text-2xl tracking-tight md:text-3xl">
+                Before &amp; After
+              </h2>
+            </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <BeforeAfterColumn images={before} label="Before" />
-              <BeforeAfterColumn images={after} label="After" />
+              <BeforeAfterColumn images={before} label="Before" tone="before" />
+              <BeforeAfterColumn images={after} label="After" tone="after" />
             </div>
           </div>
         ) : null}
