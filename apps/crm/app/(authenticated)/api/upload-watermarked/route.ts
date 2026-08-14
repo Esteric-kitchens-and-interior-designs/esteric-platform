@@ -11,12 +11,12 @@ import { NextResponse } from "next/server";
 // the raw file, watermarks it server-side, and only ever stores the
 // watermarked result — there is no unwatermarked copy left anywhere for a
 // download/share to expose.
-const ALLOWED_CONTENT_TYPES = new Set([
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/avif",
-]);
+// Limited to what Jimp (packages/storage/watermark.ts) can decode without a
+// WASM codec plugin — png/jpeg cover the real-world sources here (phone
+// photos, camera exports, edited graphics). webp/avif were dropped when the
+// watermarking pipeline moved off sharp; revisit with @jimp/wasm-webp if
+// they're actually needed.
+const ALLOWED_CONTENT_TYPES = new Set(["image/png", "image/jpeg"]);
 
 const MAX_SIZE_BYTES = 15 * 1024 * 1024;
 

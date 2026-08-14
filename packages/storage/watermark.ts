@@ -1,6 +1,7 @@
 import "server-only";
 
-import sharp from "sharp";
+import { rotation as exifRotation } from "exifr";
+import { Jimp } from "jimp";
 
 // Tuned for a subtle-but-real deterrent: visible enough to survive a crop
 // or a re-share, faint enough not to fight for attention with the photo.
@@ -10,6 +11,7 @@ const MIN_TILE_PX = 90;
 const TILE_SPACING_RATIO = 2.6;
 const OUTPUT_QUALITY = 88;
 const DEFAULT_DIMENSION_PX = 1600;
+const WATERMARK_ROTATION_DEG = -30;
 
 /**
  * Composites a faded, diagonally repeating watermark across a photo and
@@ -18,15 +20,42 @@ const DEFAULT_DIMENSION_PX = 1600;
  * no unwatermarked "original" kept anywhere downstream of this function.
  * A single corner badge would survive a lazy crop; a sparse repeating tile
  * does not.
+ *
+ * Pure-JS (Jimp) rather than sharp deliberately — sharp's native binary
+ * repeatedly failed to load in this project's Vercel + pnpm + Turbopack
+ * monorepo setup (missing at runtime despite installing correctly, and
+ * forcing it in via outputFileTracingIncludes broke Vercel's own deploy
+ * packaging outright). Jimp has no native binary, so none of that applies.
  */
 export const applyWatermark = async (
   imageBuffer: Buffer,
   watermarkBuffer: Buffer
 ): Promise<Buffer> => {
-  const source = sharp(imageBuffer).rotate();
-  const metadata = await source.metadata();
-  const width = metadata.width ?? DEFAULT_DIMENSION_PX;
-  const height = metadata.height ?? DEFAULT_DIMENSION_PX;
+  const [source, mark, rotation] = await Promise.all([
+    Jimp.fromBuffer(imageBuffer),
+    Jimp.fromBuffer(watermarkBuffer),
+    // Jimp doesn't read EXIF orientation itself — without this, photos
+    // taken on a phone held in portrait would come out sideways, since the
+    // stored pixel data is landscape with a rotation tag telling viewers
+    // how to display it.
+    exifRotation(imageBuffer).catch(() => undefined),
+  ]);
+
+  if (rotation) {
+    if (rotation.scaleX === -1) {
+      source.flip({ horizontal: true, vertical: false });
+    }
+    if (rotation.scaleY === -1) {
+      source.flip({ horizontal: false, vertical: true });
+    }
+    if (rotation.deg) {
+      // exifr's deg is clockwise; Jimp's rotate() is counter-clockwise.
+      source.rotate(-rotation.deg);
+    }
+  }
+
+  const width = source.width || DEFAULT_DIMENSION_PX;
+  const height = source.height || DEFAULT_DIMENSION_PX;
 
   const tileSize = Math.max(
     MIN_TILE_PX,
@@ -34,54 +63,19 @@ export const applyWatermark = async (
   );
   const spacing = Math.round(tileSize * TILE_SPACING_RATIO);
 
-  // Shrink the mark to tile size and dial back its alpha channel uniformly
-  // (a 1x1 semi-transparent tile multiplied in via "dest-in").
-  const fadedMark = await sharp(watermarkBuffer)
-    .resize(tileSize, tileSize, { fit: "inside" })
-    .ensureAlpha()
-    .composite([
-      {
-        input: Buffer.from([
-          255,
-          255,
-          255,
-          Math.round(255 * WATERMARK_OPACITY),
-        ]),
-        raw: { width: 1, height: 1, channels: 4 },
-        tile: true,
-        blend: "dest-in",
-      },
-    ])
-    .png()
-    .toBuffer();
+  // Shrink the mark to tile size, dial back its alpha channel uniformly,
+  // and pre-rotate it once — every tile placement below reuses this same
+  // faded, angled bitmap.
+  mark
+    .scaleToFit({ w: tileSize, h: tileSize })
+    .opacity(WATERMARK_OPACITY)
+    .rotate(WATERMARK_ROTATION_DEG);
 
-  // Render the repeating pattern as a single SVG layer sized to the source
-  // photo, then composite it over the photo in one pass.
-  const pattern = `
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern
-          height="${spacing}"
-          id="wm"
-          patternTransform="rotate(-30)"
-          patternUnits="userSpaceOnUse"
-          width="${spacing}"
-        >
-          <image
-            height="${tileSize}"
-            href="data:image/png;base64,${fadedMark.toString("base64")}"
-            width="${tileSize}"
-            x="${spacing / 4}"
-            y="${spacing / 4}"
-          />
-        </pattern>
-      </defs>
-      <rect fill="url(#wm)" height="100%" width="100%" />
-    </svg>
-  `;
+  for (let y = -spacing; y < height + spacing; y += spacing) {
+    for (let x = -spacing; x < width + spacing; x += spacing) {
+      source.composite(mark, x, y);
+    }
+  }
 
-  return await source
-    .composite([{ input: Buffer.from(pattern), left: 0, top: 0 }])
-    .jpeg({ quality: OUTPUT_QUALITY })
-    .toBuffer();
+  return await source.getBuffer("image/jpeg", { quality: OUTPUT_QUALITY });
 };

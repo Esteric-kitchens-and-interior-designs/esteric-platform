@@ -3,22 +3,16 @@ import { withLogging, withSentry } from "@repo/observability/next-config";
 import type { NextConfig } from "next";
 import { env } from "@/env";
 
-// sharp is a native addon used to watermark uploaded photos server-side
-// (apps/crm/app/(authenticated)/api/upload-watermarked) — it must stay
-// external rather than get bundled by the build.
-//
-// outputFileTracingIncludes pointing at the pnpm store was tried here to
-// force-include sharp's linux binary (its platform binary is loaded via a
-// dynamically-computed require() path that Next's tracer can't follow
-// statically), but it broke Vercel's own deploy-output packaging step
-// outright (every deploy failed at "Deploying outputs..." with an opaque
-// platform error, both with a broad and a narrowed glob) — removed rather
-// than left half-working. See conversation history for the sharp-on-Vercel
-// investigation; a pure-JS/WASM watermarking library is the likely next
-// step rather than fighting native-binary tracing further.
+// Photo watermarking (apps/crm/app/(authenticated)/api/upload-watermarked)
+// uses @repo/storage's Jimp-based watermark.ts, not sharp — sharp's native
+// binary repeatedly failed to load on Vercel in this pnpm + Turbopack
+// monorepo, and forcing it in via outputFileTracingIncludes broke Vercel's
+// deploy packaging outright. sharp itself remains a dependency only for the
+// one-off scripts/migrate-static-images.ts script, which runs locally via
+// tsx and never goes through this build, so no serverExternalPackages entry
+// is needed for it here.
 let nextConfig: NextConfig = withLogging({
   ...config,
-  serverExternalPackages: [...(config.serverExternalPackages ?? []), "sharp"],
 });
 
 if (env.VERCEL) {
