@@ -22,6 +22,13 @@ export const generateMetadata = (): Metadata =>
       "Bespoke kitchen, interior, and landscape design in Nairobi, Kenya — crafted around the way you live.",
   });
 
+// This page has no dynamic APIs, so Next.js prerenders it statically and
+// would otherwise serve a frozen snapshot until the next deploy — hero
+// images, testimonials, certifications, and FAQs are all edited from the
+// separate CRM deployment, which can't trigger a rebuild here. Revalidating
+// every 60s keeps it close to real-time without hitting the DB per-request.
+export const revalidate = 60;
+
 const Home = async () => {
   const [featuredProjects, featuredTestimonials, certifications, faqs] =
     await Promise.all([
