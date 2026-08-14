@@ -230,10 +230,13 @@ export const deletePortfolioProject = async (id: string) => {
     where: { id },
   });
 
-  await database.$transaction([
-    database.portfolioImage.deleteMany({ where: { portfolioProjectId: id } }),
-    database.portfolioProject.delete({ where: { id } }),
-  ]);
+  // No database.$transaction here — the Neon HTTP adapter this project uses
+  // (see CLAUDE.md) doesn't support real transactions, only single queries.
+  // Images (required FK) must go first regardless.
+  await database.portfolioImage.deleteMany({
+    where: { portfolioProjectId: id },
+  });
+  await database.portfolioProject.delete({ where: { id } });
 
   await logActivity({
     action: "portfolio.deleted",
