@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton } from "@repo/auth/client";
+import { UserButton, useClerk } from "@repo/auth/client";
 import { hasPermission } from "@repo/auth/permissions";
 import type { getCurrentStaffUser } from "@repo/auth/rbac";
 import { ModeToggle } from "@repo/design-system/components/mode-toggle";
@@ -17,11 +17,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@repo/design-system/components/ui/sidebar";
 import {
   Award,
   Briefcase,
   ClipboardList,
+  ExternalLink,
   FileText,
   GalleryHorizontalEnd,
   Gauge,
@@ -29,6 +31,7 @@ import {
   Image as ImageIcon,
   LayoutDashboard,
   LayoutGrid,
+  LogOut,
   Mail,
   MessageSquareQuote,
   Newspaper,
@@ -47,6 +50,7 @@ type StaffUser = NonNullable<Awaited<ReturnType<typeof getCurrentStaffUser>>>;
 interface GlobalSidebarProperties {
   readonly children: ReactNode;
   readonly staffUser: StaffUser;
+  readonly webUrl: string;
 }
 
 interface NavItem {
@@ -190,8 +194,10 @@ const NavGroup = ({
 export const GlobalSidebar = ({
   children,
   staffUser,
+  webUrl,
 }: GlobalSidebarProperties) => {
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   return (
     <>
@@ -248,25 +254,42 @@ export const GlobalSidebar = ({
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center justify-between gap-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      rootBox: "flex overflow-hidden",
-                      userButtonBox: "flex-row-reverse",
-                      userButtonOuterIdentifier: "truncate pl-0",
-                    },
-                  }}
-                  showName
-                />
-                {staffUser.role.name === "Super Admin" && (
-                  <Badge className="shrink-0 gap-1" variant="outline">
-                    <ShieldCheck className="h-3 w-3" />
-                  </Badge>
-                )}
-              </div>
-              <ModeToggle />
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href={webUrl} rel="noreferrer" target="_blank">
+                  <ExternalLink />
+                  <span>View website</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <SidebarSeparator />
+          <div className="flex items-center justify-between gap-2 px-2 py-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <UserButton
+                appearance={{
+                  elements: {
+                    rootBox: "flex overflow-hidden",
+                    userButtonBox: "flex-row-reverse",
+                    userButtonOuterIdentifier: "truncate pl-0",
+                  },
+                }}
+                showName
+              />
+              {staffUser.role.name === "Super Admin" && (
+                <Badge className="shrink-0 gap-1" variant="outline">
+                  <ShieldCheck className="h-3 w-3" />
+                </Badge>
+              )}
+            </div>
+            <ModeToggle />
+          </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => signOut()} variant="outline">
+                <LogOut />
+                <span>Log out</span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

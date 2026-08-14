@@ -49,7 +49,9 @@ const AppLayout = async ({ children }: AppLayoutProperties) => {
 
   return (
     <SidebarProvider>
-      <GlobalSidebar staffUser={staffUser}>{children}</GlobalSidebar>
+      <GlobalSidebar staffUser={staffUser} webUrl={env.NEXT_PUBLIC_WEB_URL}>
+        {children}
+      </GlobalSidebar>
     </SidebarProvider>
   );
 };
