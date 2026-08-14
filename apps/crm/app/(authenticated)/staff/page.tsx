@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Header } from "../components/header";
 import { toneClass, userStatusTone } from "../lib/badges";
 import { formatDateTime, timeAgo } from "../lib/format";
+import { InviteStaffSheet } from "./components/invite-staff-sheet";
 import { UserRoleSelect } from "./components/role-select";
 import { UserStatusToggle } from "./components/status-toggle";
 
@@ -70,13 +71,16 @@ const StaffPage = async () => {
     <>
       <Header page="Staff & Roles" pages={[]} />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-muted-foreground text-sm">
             {users.length} staff account{users.length === 1 ? "" : "s"}
           </p>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/staff/roles">Manage roles</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/staff/roles">Manage roles</Link>
+            </Button>
+            <InviteStaffSheet roles={roles} />
+          </div>
         </div>
 
         <div className="rounded-lg border">

@@ -37,7 +37,15 @@ const handleUserCreated = async (data: UserJSON) => {
     return new Response("User has no email", { status: 400 });
   }
 
-  const roleId = await getDefaultRoleId();
+  // Staff invited from the CRM carry the intended role in the Clerk
+  // invitation's publicMetadata (see staff/actions.ts inviteStaffMember).
+  // Fall back to the default Staff role if it's missing or no longer exists.
+  const intendedRoleId = data.public_metadata.intendedRoleId;
+  const intendedRole =
+    typeof intendedRoleId === "string"
+      ? await database.role.findUnique({ where: { id: intendedRoleId } })
+      : null;
+  const roleId = intendedRole ? intendedRole.id : await getDefaultRoleId();
 
   await database.user.upsert({
     where: { clerkId: data.id },
