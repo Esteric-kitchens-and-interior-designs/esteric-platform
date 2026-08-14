@@ -5,22 +5,20 @@ import { env } from "@/env";
 
 // sharp is a native addon used to watermark uploaded photos server-side
 // (apps/crm/app/(authenticated)/api/upload-watermarked) — it must stay
-// external rather than get bundled by the build. Its platform binary is
-// loaded via a dynamically-computed require() path (picking the right
-// @img/sharp-<platform> package at runtime), which Next's output file
-// tracing can't follow statically — without outputFileTracingIncludes the
-// linux-x64 binary silently gets left out of the deployed function even
-// though it installs correctly, and sharp fails to load in production.
+// external rather than get bundled by the build.
+//
+// outputFileTracingIncludes pointing at the pnpm store was tried here to
+// force-include sharp's linux binary (its platform binary is loaded via a
+// dynamically-computed require() path that Next's tracer can't follow
+// statically), but it broke Vercel's own deploy-output packaging step
+// outright (every deploy failed at "Deploying outputs..." with an opaque
+// platform error, both with a broad and a narrowed glob) — removed rather
+// than left half-working. See conversation history for the sharp-on-Vercel
+// investigation; a pure-JS/WASM watermarking library is the likely next
+// step rather than fighting native-binary tracing further.
 let nextConfig: NextConfig = withLogging({
   ...config,
   serverExternalPackages: [...(config.serverExternalPackages ?? []), "sharp"],
-  outputFileTracingIncludes: {
-    "/api/upload-watermarked/**": [
-      "../../node_modules/.pnpm/sharp@0.35.3*/**/*",
-      "../../node_modules/.pnpm/@img+sharp-linux-x64@0.35.3/**/*",
-      "../../node_modules/.pnpm/@img+sharp-libvips-linux-x64@1.3.2/**/*",
-    ],
-  },
 });
 
 if (env.VERCEL) {
