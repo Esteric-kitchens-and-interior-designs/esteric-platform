@@ -7,6 +7,12 @@ export const siteConfig = {
   legalName: "Esteric Kitchens & Interior Designs Ltd",
   tagline:
     "Bespoke kitchens, interiors, and landscapes crafted around the way you live.",
+  // Disabled at the client's request until a confirmed studio/showroom
+  // address is provided — flip back to true to restore the address block
+  // and map on the Contact page, the footer, and appointment calendar
+  // invites. The address/map fields below are left populated so re-enabling
+  // is a one-line change once real details are confirmed.
+  showAddress: false,
   // TODO: replace with the real registered office / showroom address.
   address: {
     line1: "Waiyaki Way, Westlands",

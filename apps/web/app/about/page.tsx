@@ -45,6 +45,10 @@ const values = [
   },
 ] as const;
 
+// Disabled at the client's request until real team headshots/bios are
+// ready — flip back to true to restore the "Meet the team" section below.
+const SHOW_TEAM_SECTION = false;
+
 const team = [
   {
     name: "Founder & Creative Director",
@@ -127,34 +131,36 @@ const AboutPage = () => (
         </div>
       </div>
 
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-col gap-2">
-          <h2 className="max-w-xl font-display font-regular text-3xl tracking-tighter md:text-4xl">
-            Meet the team
-          </h2>
-          <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-            The people behind every design, drawing, and finished project.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {team.map((member) => (
-            <div className="flex flex-col gap-4" key={member.name}>
-              {/* TODO: replace with a real headshot of this team member */}
-              <ImagePlaceholder
-                className="aspect-square w-full"
-                icon={Users2}
-                tone="gold"
-              />
-              <div className="flex flex-col">
-                <p className="font-display text-lg tracking-tight">
-                  {member.name}
-                </p>
-                <p className="text-muted-foreground text-sm">{member.role}</p>
+      {SHOW_TEAM_SECTION ? (
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-2">
+            <h2 className="max-w-xl font-display font-regular text-3xl tracking-tighter md:text-4xl">
+              Meet the team
+            </h2>
+            <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
+              The people behind every design, drawing, and finished project.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {team.map((member) => (
+              <div className="flex flex-col gap-4" key={member.name}>
+                {/* TODO: replace with a real headshot of this team member */}
+                <ImagePlaceholder
+                  className="aspect-square w-full"
+                  icon={Users2}
+                  tone="gold"
+                />
+                <div className="flex flex-col">
+                  <p className="font-display text-lg tracking-tight">
+                    {member.name}
+                  </p>
+                  <p className="text-muted-foreground text-sm">{member.role}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="flex flex-col items-center gap-6 rounded-md bg-secondary p-10 text-center text-secondary-foreground lg:p-16">
         <h2 className="max-w-xl font-display font-regular text-3xl tracking-tighter md:text-4xl">

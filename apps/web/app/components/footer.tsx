@@ -83,10 +83,12 @@ export const Footer = () => (
               </p>
             </div>
             <div className="flex flex-col gap-2 text-foreground/75 text-sm">
-              <span className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                {siteConfig.address.full}
-              </span>
+              {siteConfig.showAddress ? (
+                <span className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                  {siteConfig.address.full}
+                </span>
+              ) : null}
               <span className="flex items-center gap-2">
                 <PhoneIcon className="h-4 w-4 shrink-0 text-primary" />
                 <a className="hover:underline" href={siteConfig.phoneHref}>

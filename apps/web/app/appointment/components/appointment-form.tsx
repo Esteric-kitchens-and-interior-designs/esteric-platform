@@ -58,7 +58,9 @@ export const AppointmentForm = ({ defaultService }: AppointmentFormProps) => {
           <AddToCalendar
             description="Consultation with Esteric Kitchens & Interior Designs. This slot is pending confirmation."
             end={range.end}
-            location={siteConfig.address.full}
+            location={
+              siteConfig.showAddress ? siteConfig.address.full : undefined
+            }
             start={range.start}
             title="Esteric Kitchens & Interior Designs — Consultation"
           />

@@ -27,15 +27,17 @@ const ContactPage = () => (
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-              <div>
-                <p className="font-medium">Studio & Showroom</p>
-                <p className="text-muted-foreground text-sm">
-                  {siteConfig.address.full}
-                </p>
+            {siteConfig.showAddress ? (
+              <div className="flex items-start gap-3">
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <div>
+                  <p className="font-medium">Studio & Showroom</p>
+                  <p className="text-muted-foreground text-sm">
+                    {siteConfig.address.full}
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : null}
             <div className="flex items-start gap-3">
               <Phone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
@@ -73,17 +75,18 @@ const ContactPage = () => (
             </div>
           </div>
 
-          {/* TODO: swap for the real showroom location once confirmed */}
-          <div className="aspect-video w-full overflow-hidden rounded-md border">
-            <iframe
-              allowFullScreen
-              className="h-full w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              src={siteConfig.googleMapsEmbedSrc}
-              title="Esteric Kitchens & Interior Designs location (placeholder — to be updated)"
-            />
-          </div>
+          {siteConfig.showAddress ? (
+            <div className="aspect-video w-full overflow-hidden rounded-md border">
+              <iframe
+                allowFullScreen
+                className="h-full w-full"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={siteConfig.googleMapsEmbedSrc}
+                title="Esteric Kitchens & Interior Designs location (placeholder — to be updated)"
+              />
+            </div>
+          ) : null}
         </div>
 
         <ContactForm />
