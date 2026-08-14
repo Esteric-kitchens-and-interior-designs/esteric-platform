@@ -1,5 +1,6 @@
 import { Badge } from "@repo/design-system/components/ui/badge";
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import type { getFeaturedPortfolioProjects } from "@/lib/queries";
@@ -22,13 +23,22 @@ export const PortfolioCard = ({ project }: PortfolioCardProps) => {
       className="group flex flex-col gap-4 rounded-md"
       href={`/portfolio/${project.slug}`}
     >
-      <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
-        {/* TODO: replace with real cover photography for this project once uploaded */}
-        <ImagePlaceholder
-          className="h-full w-full transition-transform duration-300 group-hover:scale-[1.03]"
-          label={cover?.caption ?? project.title}
-          tone="charcoal"
-        />
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
+        {cover ? (
+          <Image
+            alt={cover.altText ?? cover.caption ?? project.title}
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            src={cover.url}
+          />
+        ) : (
+          <ImagePlaceholder
+            className="h-full w-full transition-transform duration-300 group-hover:scale-[1.03]"
+            label={project.title}
+            tone="charcoal"
+          />
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">

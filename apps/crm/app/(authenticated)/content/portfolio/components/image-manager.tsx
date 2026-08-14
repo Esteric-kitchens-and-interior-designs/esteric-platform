@@ -42,6 +42,9 @@ const imageTypes: PortfolioImageType[] = [
   "GALLERY",
 ];
 
+const MAX_BEFORE_AFTER_IMAGES = 3;
+const CAPPED_TYPES = new Set<PortfolioImageType>(["BEFORE", "AFTER"]);
+
 export const ImageManager = ({
   portfolioProjectId,
   images,
@@ -55,6 +58,17 @@ export const ImageManager = ({
   const [type, setType] = useState<PortfolioImageType>("GALLERY");
   const [caption, setCaption] = useState("");
   const [altText, setAltText] = useState("");
+
+  const typeCounts = images.reduce<Partial<Record<PortfolioImageType, number>>>(
+    (counts, image) => {
+      counts[image.type] = (counts[image.type] ?? 0) + 1;
+      return counts;
+    },
+    {}
+  );
+  const isTypeAtLimit = (candidate: PortfolioImageType) =>
+    CAPPED_TYPES.has(candidate) &&
+    (typeCounts[candidate] ?? 0) >= MAX_BEFORE_AFTER_IMAGES;
 
   const handleUploaded = (file: UploadedFile) => {
     setPendingUpload(file);
@@ -162,12 +176,26 @@ export const ImageManager = ({
                 </SelectTrigger>
                 <SelectContent>
                   {imageTypes.map((imageType) => (
-                    <SelectItem key={imageType} value={imageType}>
+                    <SelectItem
+                      disabled={isTypeAtLimit(imageType)}
+                      key={imageType}
+                      value={imageType}
+                    >
                       {imageType}
+                      {isTypeAtLimit(imageType)
+                        ? ` (max ${MAX_BEFORE_AFTER_IMAGES} reached)`
+                        : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {isTypeAtLimit(type) ? (
+                <p className="text-destructive text-xs">
+                  Maximum of {MAX_BEFORE_AFTER_IMAGES} "{type.toLowerCase()}"
+                  images reached — remove one to add another, or pick a
+                  different type.
+                </p>
+              ) : null}
               <Input
                 onChange={(event) => setCaption(event.target.value)}
                 placeholder="Caption (optional)"
@@ -179,7 +207,7 @@ export const ImageManager = ({
                 value={altText}
               />
               <Button
-                disabled={isPending}
+                disabled={isPending || isTypeAtLimit(type)}
                 onClick={handleSave}
                 size="sm"
                 type="button"

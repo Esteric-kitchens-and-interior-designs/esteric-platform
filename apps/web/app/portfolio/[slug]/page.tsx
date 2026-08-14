@@ -1,9 +1,11 @@
 import { Badge } from "@repo/design-system/components/ui/badge";
 import { Button } from "@repo/design-system/components/ui/button";
+import { cn } from "@repo/design-system/lib/utils";
 import { createMetadata } from "@repo/seo/metadata";
 import { format } from "date-fns";
 import { ArrowLeftIcon, CalendarDays, MapPin, MoveRight } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ImagePlaceholder } from "@/components/image-placeholder";
@@ -14,6 +16,10 @@ import { serviceCategoryLabels } from "@/lib/services";
 interface PortfolioDetailPageProps {
   readonly params: Promise<{ slug: string }>;
 }
+
+type PortfolioImage = NonNullable<
+  Awaited<ReturnType<typeof getPortfolioProjectBySlug>>
+>["images"][number];
 
 export const generateMetadata = async ({
   params,
@@ -34,6 +40,47 @@ export const generateMetadata = async ({
   });
 };
 
+const BeforeAfterColumn = ({
+  images,
+  label,
+}: {
+  images: PortfolioImage[];
+  label: string;
+}) => {
+  if (images.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-muted-foreground text-xs uppercase tracking-widest">
+        {label}
+      </span>
+      <div
+        className={cn(
+          "grid gap-2",
+          images.length > 1 ? "grid-cols-2" : "grid-cols-1"
+        )}
+      >
+        {images.map((image) => (
+          <div
+            className="relative aspect-square w-full overflow-hidden rounded-md"
+            key={image.id}
+          >
+            <Image
+              alt={image.altText ?? image.caption ?? label}
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 25vw, 50vw"
+              src={image.url}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
   const { slug } = await params;
   const project = await getPortfolioProjectBySlug(slug);
@@ -45,8 +92,9 @@ const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
   const cover = project.images.find((image) => image.type === "COVER");
   const before = project.images.filter((image) => image.type === "BEFORE");
   const after = project.images.filter((image) => image.type === "AFTER");
-  const progress = project.images.filter((image) => image.type === "PROGRESS");
-  const gallery = project.images.filter((image) => image.type === "GALLERY");
+  const gallery = project.images.filter(
+    (image) => image.type === "PROGRESS" || image.type === "GALLERY"
+  );
   const testimonial = project.testimonials[0];
 
   return (
@@ -92,12 +140,24 @@ const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
               </Link>
             </Button>
           </div>
-          {/* TODO: replace with the real cover photograph for this project */}
-          <ImagePlaceholder
-            className="aspect-[4/3] w-full"
-            label={cover?.caption ?? project.title}
-            tone="gold"
-          />
+          {cover ? (
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
+              <Image
+                alt={cover.altText ?? cover.caption ?? project.title}
+                className="object-cover"
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={cover.url}
+              />
+            </div>
+          ) : (
+            <ImagePlaceholder
+              className="aspect-[4/3] w-full"
+              label={project.title}
+              tone="gold"
+            />
+          )}
         </div>
 
         {before.length > 0 || after.length > 0 ? (
@@ -106,49 +166,31 @@ const PortfolioDetailPage = async ({ params }: PortfolioDetailPageProps) => {
               Before & After
             </h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {before.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <span className="text-muted-foreground text-xs uppercase tracking-widest">
-                    Before
-                  </span>
-                  {/* TODO: replace with real "before" photography */}
-                  <ImagePlaceholder
-                    className="aspect-square w-full"
-                    label="Before"
-                    tone="charcoal"
-                  />
-                </div>
-              ) : null}
-              {after.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <span className="text-muted-foreground text-xs uppercase tracking-widest">
-                    After
-                  </span>
-                  {/* TODO: replace with real "after" photography */}
-                  <ImagePlaceholder
-                    className="aspect-square w-full"
-                    label="After"
-                    tone="gold"
-                  />
-                </div>
-              ) : null}
+              <BeforeAfterColumn images={before} label="Before" />
+              <BeforeAfterColumn images={after} label="After" />
             </div>
           </div>
         ) : null}
 
-        {progress.length > 0 || gallery.length > 0 ? (
+        {gallery.length > 0 ? (
           <div className="flex flex-col gap-6">
             <h2 className="font-display text-2xl tracking-tight md:text-3xl">
               Gallery
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {[...progress, ...gallery].map((image) => (
-                <ImagePlaceholder
-                  className="aspect-square w-full"
+              {gallery.map((image) => (
+                <div
+                  className="relative aspect-square w-full overflow-hidden rounded-md"
                   key={image.id}
-                  label={image.caption ?? undefined}
-                  tone="emerald"
-                />
+                >
+                  <Image
+                    alt={image.altText ?? image.caption ?? project.title}
+                    className="object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 25vw, 50vw"
+                    src={image.url}
+                  />
+                </div>
               ))}
             </div>
           </div>

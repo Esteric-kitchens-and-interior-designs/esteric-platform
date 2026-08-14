@@ -26,6 +26,8 @@ export interface PortfolioFormPayload {
   title: string;
 }
 
+const MAX_BEFORE_AFTER_IMAGES = 3;
+
 const uniqueSlug = async (base: string, excludeId?: string) => {
   let slug = base || slugify(String(Date.now()));
   let attempt = 0;
@@ -137,6 +139,17 @@ export const addPortfolioImage = async (
   altText?: string | null
 ) => {
   await requirePermission("content:write");
+
+  if (type === "BEFORE" || type === "AFTER") {
+    const typeCount = await database.portfolioImage.count({
+      where: { portfolioProjectId, type },
+    });
+    if (typeCount >= MAX_BEFORE_AFTER_IMAGES) {
+      throw new Error(
+        `Maximum of ${MAX_BEFORE_AFTER_IMAGES} "${type.toLowerCase()}" images reached — remove one to add another.`
+      );
+    }
+  }
 
   const count = await database.portfolioImage.count({
     where: { portfolioProjectId },
