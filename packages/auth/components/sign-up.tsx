@@ -4,7 +4,9 @@ export const SignUp = () => (
   <ClerkSignUp
     appearance={{
       elements: {
-        header: "hidden",
+        header: { display: "none" },
+        headerTitle: { display: "none" },
+        headerSubtitle: { display: "none" },
       },
     }}
   />

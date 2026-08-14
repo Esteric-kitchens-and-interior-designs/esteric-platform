@@ -4,7 +4,10 @@ export const SignIn = () => (
   <ClerkSignIn
     appearance={{
       elements: {
-        header: "hidden",
+        header: { display: "none" },
+        headerTitle: { display: "none" },
+        headerSubtitle: { display: "none" },
+        footerAction: { display: "none" },
       },
     }}
   />

@@ -1,5 +1,6 @@
 "use client";
 
+import { dark } from "@clerk/themes";
 import { UserButton, useClerk } from "@repo/auth/client";
 import { hasPermission } from "@repo/auth/permissions";
 import type { getCurrentStaffUser } from "@repo/auth/rbac";
@@ -18,6 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@repo/design-system/components/ui/sidebar";
 import {
   Award,
@@ -42,8 +44,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { Search } from "./search";
+
+// @clerk/types' `Appearance<Theme>` generic has drifted out of sync with
+// what @clerk/nextjs's UserButton actually accepts at this version pin;
+// baseTheme/elements are stable, documented Clerk appearance options at
+// runtime regardless (see packages/auth/provider.tsx for the same cast).
+type UserButtonAppearance = ComponentProps<typeof UserButton>["appearance"];
 
 type StaffUser = NonNullable<Awaited<ReturnType<typeof getCurrentStaffUser>>>;
 
@@ -159,6 +167,7 @@ const NavGroup = ({
   const visible = items.filter(
     (item) => !item.permission || hasPermission(staffUser, item.permission)
   );
+  const { setOpenMobile } = useSidebar();
 
   if (visible.length === 0) {
     return null;
@@ -179,7 +188,7 @@ const NavGroup = ({
               }
               tooltip={item.title}
             >
-              <Link href={item.url}>
+              <Link href={item.url} onClick={() => setOpenMobile(false)}>
                 <item.icon />
                 <span>{item.title}</span>
               </Link>
@@ -198,6 +207,7 @@ export const GlobalSidebar = ({
 }: GlobalSidebarProperties) => {
   const pathname = usePathname();
   const { signOut } = useClerk();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <>
@@ -206,7 +216,7 @@ export const GlobalSidebar = ({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild size="lg">
-                <Link href="/">
+                <Link href="/" onClick={() => setOpenMobile(false)}>
                   <Image
                     alt="Esteric"
                     className="size-6 shrink-0"
@@ -267,13 +277,17 @@ export const GlobalSidebar = ({
           <div className="flex items-center justify-between gap-2 px-2 py-1">
             <div className="flex min-w-0 items-center gap-2">
               <UserButton
-                appearance={{
-                  elements: {
-                    rootBox: "flex overflow-hidden",
-                    userButtonBox: "flex-row-reverse",
-                    userButtonOuterIdentifier: "truncate pl-0",
-                  },
-                }}
+                appearance={
+                  {
+                    baseTheme: dark,
+                    elements: {
+                      rootBox: "flex overflow-hidden",
+                      userButtonBox: "flex-row-reverse",
+                      userButtonOuterIdentifier:
+                        "truncate pl-0 text-sidebar-foreground",
+                    },
+                  } as UserButtonAppearance
+                }
                 showName
               />
               {staffUser.role.name === "Super Admin" && (
@@ -286,7 +300,7 @@ export const GlobalSidebar = ({
           </div>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => signOut()} variant="outline">
+              <SidebarMenuButton onClick={() => signOut()}>
                 <LogOut />
                 <span>Log out</span>
               </SidebarMenuButton>

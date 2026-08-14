@@ -12,6 +12,7 @@
     "migrate:static-images": "tsx --env-file=.env.local scripts/migrate-static-images.ts"
   },
   "dependencies": {
+    "@clerk/themes": "^2.4.57",
     "@prisma/adapter-neon": "7.4.2",
     "@react-pdf/renderer": "^4.4.1",
     "@repo/analytics": "workspace:*",
