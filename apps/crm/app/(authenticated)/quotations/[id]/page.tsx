@@ -63,7 +63,7 @@ const QuotationDetailPage = async ({ params }: QuotationDetailPageProps) => {
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-display font-semibold text-2xl">
                 {quotation.quoteNumber}
               </h1>

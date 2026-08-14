@@ -36,5 +36,17 @@
   "overrides": {
     "parse5": "^7.2.1"
   },
+  "pnpm": {
+    "supportedArchitectures": {
+      "os": [
+        "current",
+        "linux"
+      ],
+      "cpu": [
+        "current",
+        "x64"
+      ]
+    }
+  },
   "type": "module"
 }

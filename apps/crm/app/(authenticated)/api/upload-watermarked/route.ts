@@ -74,9 +74,18 @@ export const POST = async (request: Request): Promise<NextResponse> => {
       sizeBytes: watermarked.byteLength,
     });
   } catch (error) {
+    // Anything caught here is an unexpected server-side failure (image
+    // processing or the Blob upload itself), not a validation rejection —
+    // those are handled above and already return a specific message. Log
+    // the real error for diagnosis but keep the client-facing message
+    // generic rather than leaking internals like a native module trace.
+    console.error("upload-watermarked failed:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Upload failed" },
-      { status: 400 }
+      {
+        error:
+          "Failed to process this image. Try a different photo, or contact support if this keeps happening.",
+      },
+      { status: 500 }
     );
   }
 };

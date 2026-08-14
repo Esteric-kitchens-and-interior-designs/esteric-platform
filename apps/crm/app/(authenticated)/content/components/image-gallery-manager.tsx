@@ -185,7 +185,7 @@ export const ImageGalleryManager = ({
       {images.length === 0 ? (
         <p className="text-muted-foreground text-sm">{emptyLabel}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {images.map((image) => (
             <ImageRow
               canWrite={canWrite}

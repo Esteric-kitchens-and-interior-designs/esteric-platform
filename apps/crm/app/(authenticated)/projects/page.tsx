@@ -118,7 +118,7 @@ const ProjectsPage = async ({ searchParams }: ProjectsPageProps) => {
 
         <form className="flex flex-wrap items-center gap-3" method="get">
           <Select defaultValue={status ?? "ALL"} name="status">
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -131,7 +131,7 @@ const ProjectsPage = async ({ searchParams }: ProjectsPageProps) => {
             </SelectContent>
           </Select>
           <Select defaultValue={category ?? "ALL"} name="category">
-            <SelectTrigger className="w-56">
+            <SelectTrigger className="w-full sm:w-56">
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>

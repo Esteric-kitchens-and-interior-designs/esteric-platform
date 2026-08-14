@@ -110,7 +110,7 @@ const QuotationsPage = async ({ searchParams }: QuotationsPageProps) => {
 
         <form className="flex flex-wrap items-center gap-3" method="get">
           <Select defaultValue={status ?? "ALL"} name="status">
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ const QuotationsPage = async ({ searchParams }: QuotationsPageProps) => {
             </SelectContent>
           </Select>
           <Select defaultValue={customer ?? "ALL"} name="customer">
-            <SelectTrigger className="w-56">
+            <SelectTrigger className="w-full sm:w-56">
               <SelectValue placeholder="All customers" />
             </SelectTrigger>
             <SelectContent>
