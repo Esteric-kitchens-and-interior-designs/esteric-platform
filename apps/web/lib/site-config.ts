@@ -40,6 +40,7 @@ export const siteConfig = {
     tiktok: "https://www.tiktok.com/@ekiinteriors",
     x: "https://x.com/ekiinteriors",
     facebook: "https://www.facebook.com/EstericKitchensandInteriorDesigns",
+    youtube: "https://www.youtube.com/@EkiInteriors",
     linkedin:
       "https://www.linkedin.com/company/esteric-kitchens-interior-designs",
   },

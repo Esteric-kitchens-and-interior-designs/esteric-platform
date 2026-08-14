@@ -17,6 +17,13 @@ interface FileUploaderProps {
   folder: string;
   label?: string;
   onUploaded: (file: UploadedFile) => void;
+  /**
+   * Route the upload through the server-side watermarking pipeline instead
+   * of uploading straight to Blob. Use this for public-facing photography
+   * (portfolio, blog covers, certifications, testimonials) — never for
+   * documents or files that shouldn't be recompressed/watermarked.
+   */
+  watermark?: boolean;
 }
 
 export const FileUploader = ({
@@ -24,10 +31,42 @@ export const FileUploader = ({
   accept,
   label = "Upload file",
   onUploaded,
+  watermark,
 }: FileUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const uploadWatermarked = async (file: File): Promise<UploadedFile> => {
+    const formData = new FormData();
+    formData.set("file", file);
+    formData.set("folder", folder);
+
+    const response = await fetch("/api/upload-watermarked", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error ?? "Upload failed");
+    }
+
+    return result as UploadedFile;
+  };
+
+  const uploadDirect = async (file: File): Promise<UploadedFile> => {
+    const blob = await upload(`${folder}/${Date.now()}-${file.name}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/upload",
+    });
+    return {
+      url: blob.url,
+      name: file.name,
+      mimeType: file.type || "application/octet-stream",
+      sizeBytes: file.size,
+    };
+  };
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -37,16 +76,10 @@ export const FileUploader = ({
     setIsUploading(true);
     setError(null);
     try {
-      const blob = await upload(`${folder}/${Date.now()}-${file.name}`, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-      });
-      onUploaded({
-        url: blob.url,
-        name: file.name,
-        mimeType: file.type || "application/octet-stream",
-        sizeBytes: file.size,
-      });
+      const uploaded = watermark
+        ? await uploadWatermarked(file)
+        : await uploadDirect(file);
+      onUploaded(uploaded);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

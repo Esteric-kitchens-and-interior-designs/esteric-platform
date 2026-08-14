@@ -2,66 +2,72 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ImagePlaceholder } from "@/components/image-placeholder";
+import type { getHeroImages } from "@/lib/queries";
 
-const slides = [
-  {
-    src: "/images/hero/hero-kitchen-navy.jpg",
-    alt: "Custom navy-blue kitchen with brass pendant lighting and marble island",
-  },
-  {
-    src: "/images/hero/hero-living-room.jpg",
-    alt: "Living room with tailored drapery and natural light",
-  },
-  {
-    src: "/images/hero/hero-kitchen-dark-marble.jpg",
-    alt: "Kitchen with dark marble countertops overlooking the garden",
-  },
-];
+interface HeroSliderProps {
+  readonly images: Awaited<ReturnType<typeof getHeroImages>>;
+}
 
 const SLIDE_INTERVAL_MS = 5500;
 
-export const HeroSlider = () => {
+export const HeroSlider = ({ images }: HeroSliderProps) => {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
+    if (images.length < 2) {
+      return;
+    }
     const id = setInterval(() => {
-      setActive((current) => (current + 1) % slides.length);
+      setActive((current) => (current + 1) % images.length);
     }, SLIDE_INTERVAL_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [images.length]);
+
+  if (images.length === 0) {
+    return (
+      <ImagePlaceholder
+        className="aspect-[4/3] w-full"
+        label="Esteric Kitchens & Interior Designs"
+        tone="gold"
+      />
+    );
+  }
 
   return (
     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
-      {slides.map((slide, index) => (
+      {images.map((image, index) => (
         <Image
-          alt={slide.alt}
+          alt={image.altText ?? "Esteric Kitchens & Interior Designs"}
           className={`object-cover transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${
             index === active ? "opacity-100" : "opacity-0"
           }`}
           fill
-          key={slide.src}
+          key={image.id}
           priority={index === 0}
           sizes="(min-width: 1024px) 50vw, 100vw"
-          src={slide.src}
+          src={image.url}
         />
       ))}
-      <div className="absolute right-0 bottom-0 left-0 flex justify-center p-2">
-        {slides.map((slide, index) => (
-          <button
-            aria-label={`Show slide ${index + 1}`}
-            className="flex items-center justify-center p-2.5"
-            key={slide.src}
-            onClick={() => setActive(index)}
-            type="button"
-          >
-            <span
-              className={`block h-1.5 rounded-full transition-all ${
-                index === active ? "w-6 bg-gold" : "w-1.5 bg-background/70"
-              }`}
-            />
-          </button>
-        ))}
-      </div>
+      {images.length > 1 ? (
+        <div className="absolute right-0 bottom-0 left-0 flex justify-center p-2">
+          {images.map((image, index) => (
+            <button
+              aria-label={`Show slide ${index + 1}`}
+              className="flex items-center justify-center p-2.5"
+              key={image.id}
+              onClick={() => setActive(index)}
+              type="button"
+            >
+              <span
+                className={`block h-1.5 rounded-full transition-all ${
+                  index === active ? "w-6 bg-gold" : "w-1.5 bg-background/70"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

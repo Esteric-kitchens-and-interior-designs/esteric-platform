@@ -182,6 +182,7 @@ export const BlogForm = ({
                 coverImageUrl ? "Change cover image" : "Upload cover image"
               }
               onUploaded={(file) => setCoverImageUrl(file.url)}
+              watermark
             />
           </div>
         </div>

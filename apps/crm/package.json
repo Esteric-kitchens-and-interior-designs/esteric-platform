@@ -8,9 +8,11 @@
     "analyze": "ANALYZE=true npm run build",
     "test": "NODE_ENV=test vitest run",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "migrate:static-images": "tsx --env-file=.env.local scripts/migrate-static-images.ts"
   },
   "dependencies": {
+    "@prisma/adapter-neon": "7.4.2",
     "@react-pdf/renderer": "^4.4.1",
     "@repo/analytics": "workspace:*",
     "@repo/auth": "workspace:*",
@@ -34,6 +36,7 @@
     "react-dom": "19.2.4",
     "recharts": "^3.8.0",
     "require-in-the-middle": "8.0.1",
+    "sharp": "^0.35.3",
     "sonner": "^2.0.7",
     "zod": "^4.3.6"
   },
@@ -48,6 +51,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "jsdom": "^28.1.0",
     "tailwindcss": "^4.2.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }

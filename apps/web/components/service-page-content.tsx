@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { PortfolioCard } from "@/components/portfolio-card";
-import { getPortfolioProjects } from "@/lib/queries";
+import { getPortfolioProjects, getServiceImages } from "@/lib/queries";
 import type { ServiceDefinition } from "@/lib/services";
 
 interface ServicePageContentProps {
@@ -14,7 +14,10 @@ interface ServicePageContentProps {
 export const ServicePageContent = async ({
   service,
 }: ServicePageContentProps) => {
-  const projects = await getPortfolioProjects(service.category);
+  const [projects, images] = await Promise.all([
+    getPortfolioProjects(service.category),
+    getServiceImages(service.category),
+  ]);
 
   return (
     <div className="w-full">
@@ -43,15 +46,15 @@ export const ServicePageContent = async ({
               </Button>
             </div>
           </div>
-          {service.images[0] ? (
+          {images[0] ? (
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
               <Image
-                alt={service.images[0].alt}
+                alt={images[0].altText ?? service.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                src={service.images[0].src}
+                src={images[0].url}
               />
             </div>
           ) : (
@@ -65,19 +68,19 @@ export const ServicePageContent = async ({
           )}
         </div>
 
-        {service.images.length > 1 ? (
+        {images.length > 1 ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {service.images.slice(1).map((image) => (
+            {images.slice(1).map((image) => (
               <div
                 className="relative aspect-square overflow-hidden rounded-md"
-                key={image.src}
+                key={image.id}
               >
                 <Image
-                  alt={image.alt}
+                  alt={image.altText ?? service.title}
                   className="object-cover transition-transform duration-300 hover:scale-105"
                   fill
                   sizes="(min-width: 1024px) 33vw, 50vw"
-                  src={image.src}
+                  src={image.url}
                 />
               </div>
             ))}

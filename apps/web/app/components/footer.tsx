@@ -5,6 +5,7 @@ import {
   Linkedin,
   MapPin,
   Phone as PhoneIcon,
+  Youtube,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,6 +59,7 @@ const socialLinks = [
   { title: "TikTok", href: siteConfig.social.tiktok, icon: TikTokIcon },
   { title: "X", href: siteConfig.social.x, icon: XIcon },
   { title: "Facebook", href: siteConfig.social.facebook, icon: Facebook },
+  { title: "YouTube", href: siteConfig.social.youtube, icon: Youtube },
   { title: "LinkedIn", href: siteConfig.social.linkedin, icon: Linkedin },
 ];
 

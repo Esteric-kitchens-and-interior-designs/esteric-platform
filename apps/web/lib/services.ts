@@ -11,18 +11,11 @@ import {
   Trees,
 } from "lucide-react";
 
-export interface ServiceImage {
-  alt: string;
-  src: string;
-}
-
 export interface ServiceDefinition {
   category: ServiceCategory;
   description: string;
   highlights: string[];
   icon: LucideIcon;
-  /** Real project photography for this service — empty until photos exist, never placeholders. */
-  images: ServiceImage[];
   process: { title: string; description: string }[];
   shortTitle: string;
   slug: string;
@@ -40,24 +33,6 @@ export const services: ServiceDefinition[] = [
     description:
       "From first sketch to final installation, we design kitchens that balance everyday practicality with a refined, timeless aesthetic — custom cabinetry, considered storage, and finishes chosen to last.",
     icon: ChefHat,
-    images: [
-      {
-        src: "/images/kitchen-designs/kitchen-navy-island.jpg",
-        alt: "Navy-blue kitchen with brass pendant lighting and a marble island",
-      },
-      {
-        src: "/images/kitchen-designs/kitchen-dark-marble-view.jpg",
-        alt: "Kitchen with dark marble countertops and a garden view",
-      },
-      {
-        src: "/images/kitchen-designs/kitchen-dark-counters.jpg",
-        alt: "Kitchen with built-in double ovens and dark countertops",
-      },
-      {
-        src: "/images/kitchen-designs/kitchen-window-view.jpg",
-        alt: "Kitchen island with pendant lighting overlooking large windows",
-      },
-    ],
     highlights: [
       "Custom cabinetry and joinery, built to measure",
       "Kitchen islands, breakfast counters, and pantry design",
@@ -94,28 +69,11 @@ export const services: ServiceDefinition[] = [
     shortTitle: "Interiors",
     tagline: "Cohesive interiors that carry your style through every room.",
     description:
-      "We design living rooms, bedrooms, offices, and full-home interiors with a considered material palette, curated furnishings, and layouts that make every space feel intentional.",
+      "We design living rooms, bedrooms, offices, and full-home interiors with a considered material palette, curated furnishings, and layouts that make every space feel intentional — including the tiling, paintwork, and gypsum ceiling detailing that finish every room. No interior project leaves our hands without them.",
     icon: Sofa,
-    images: [
-      {
-        src: "/images/interior-designs/living-room-drapery.jpg",
-        alt: "Living room with tailored drapery and sheer curtains",
-      },
-      {
-        src: "/images/interior-designs/living-room-windows.jpg",
-        alt: "Living room seating arranged before floor-to-ceiling windows",
-      },
-      {
-        src: "/images/interior-designs/staircase-mirror.jpg",
-        alt: "Entryway with an octagonal mirror and hardwood staircase",
-      },
-      {
-        src: "/images/interior-designs/grand-staircase.jpg",
-        alt: "Grand staircase with wrought-iron balustrade",
-      },
-    ],
     highlights: [
       "Full-home and single-room interior design",
+      "Tiling, paintwork, and gypsum ceiling & partition works",
       "Space planning, furniture selection, and styling",
       "Lighting design and material palettes",
       "Commercial and residential fit-outs",
@@ -152,10 +110,6 @@ export const services: ServiceDefinition[] = [
     description:
       "We design and build gardens, patios, and outdoor living areas that extend your home outward — from planting design to hardscaping, water features, and outdoor lighting.",
     icon: Trees,
-    // TODO: no landscaping photography available yet — add real project
-    // photos here as soon as they exist. Deliberately left empty rather
-    // than filled with mismatched interior photos.
-    images: [],
     highlights: [
       "Garden design and planting plans",
       "Patios, decking, and outdoor entertaining areas",
@@ -194,20 +148,6 @@ export const services: ServiceDefinition[] = [
     description:
       "Walk-in closets, fitted wardrobes, and bespoke cabinetry throughout the home — designed to maximise every inch of storage without compromising on style.",
     icon: DoorClosed,
-    images: [
-      {
-        src: "/images/wardrobes-cabinets/pantry-pullout-1.jpg",
-        alt: "Fitted pull-out pantry cabinetry mid-installation",
-      },
-      {
-        src: "/images/wardrobes-cabinets/pantry-pullout-2.jpg",
-        alt: "Tall pull-out storage unit with wire shelving",
-      },
-      {
-        src: "/images/wardrobes-cabinets/cabinet-detail.jpg",
-        alt: "Detail of fitted overhead cabinetry finish",
-      },
-    ],
     highlights: [
       "Fitted and walk-in wardrobes",
       "Bespoke storage and built-in cabinetry",

@@ -158,6 +158,7 @@ export const TestimonialForm = ({
               folder="testimonials"
               label={photoUrl ? "Change photo" : "Upload photo"}
               onUploaded={(file: UploadedFile) => setPhotoUrl(file.url)}
+              watermark
             />
           </div>
         </div>

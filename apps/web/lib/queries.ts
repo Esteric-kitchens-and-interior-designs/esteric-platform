@@ -86,3 +86,15 @@ export const getJobPostingBySlug = (slug: string) =>
   database.jobPosting.findFirst({
     where: { slug, status: "PUBLISHED" },
   });
+
+export const getHeroImages = () =>
+  database.heroImage.findMany({
+    where: { isPublished: true },
+    orderBy: { sortOrder: "asc" },
+  });
+
+export const getServiceImages = (category: ServiceCategory) =>
+  database.serviceImage.findMany({
+    where: { category, isPublished: true },
+    orderBy: { sortOrder: "asc" },
+  });

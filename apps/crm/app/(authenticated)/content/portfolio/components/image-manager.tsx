@@ -146,6 +146,7 @@ export const ImageManager = ({
             folder="portfolio"
             label={pendingUpload ? "Change image" : "Choose image"}
             onUploaded={handleUploaded}
+            watermark
           />
           {pendingUpload ? (
             <div className="space-y-2 rounded-lg border p-3">

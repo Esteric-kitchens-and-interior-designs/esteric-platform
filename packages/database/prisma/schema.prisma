@@ -566,6 +566,37 @@ model FAQ {
   createdAt   DateTime @default(now())
 }
 
+// Homepage hero slider — capped at 3 images (enforced in the CRM action, not
+// the schema) since the slider UI is designed around a handful of slides.
+model HeroImage {
+  id          String   @id @default(cuid())
+  url         String
+  altText     String?
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+// Per-service-page photo gallery — capped at 4 images per category
+// (enforced in the CRM action). Distinct from PortfolioImage: this is the
+// service page's own gallery, not an individual completed project.
+model ServiceImage {
+  id          String          @id @default(cuid())
+  category    ServiceCategory
+  url         String
+  altText     String?
+  sortOrder   Int             @default(0)
+  isPublished Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([category])
+  @@index([sortOrder])
+}
+
 model JobPosting {
   id             String         @id @default(cuid())
   title          String
